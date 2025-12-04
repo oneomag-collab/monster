@@ -3,58 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Хоррор-Сайт</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Тайное Братство Монстров</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:wght@400;500;600&family=Eater&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 </head>
 <body>
     <!-- Фаза 1: 404 и страшный монстр -->
     <div id="phase-error" class="phase active">
         <div class="error-container">
-            <img id="error-404" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDAwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJDaW56ZWwiIGZvbnQtc2l6ZT0iNDgiIGZpbGw9IiNjMzMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5FcnJvciA0MDQ8L3RleHQ+PHRleHQgeD0iNTAlIiB5PSI1NSUiIGZvbnQtZmFtaWx5PSJDYXZlYXQiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5QYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=" alt="Error 404">
-        </div>
-    </div>
-
-    <div id="phase-horror" class="phase">
-        <!-- Видео/гиф страшного монстра -->
-        <video id="monster1-video" class="monster-media" loop muted playsinline>
-            <source src="assets/media/monster1.mp4" type="video/mp4">
-            <source src="assets/media/monster1.webm" type="video/webm">
-            Ваш браузер не поддерживает видео.
-        </video>
-
-        <!-- Кровавая табличка с вводом имени -->
-        <div id="blood-plate" class="hidden">
-            <div class="blood-texture"></div>
-            <div class="blood-content">
-                <h2>ВВЕДИТЕ СВОЕ ИМЯ</h2>
-                <input type="text" id="name-input" maxlength="20" placeholder="Твое имя...">
-                <button id="submit-name">✓</button>
+            <div id="error-404">
+                <span class="error-code">404</span>
+                <span class="error-text">ENTITY NOT FOUND</span>
             </div>
-            <!-- Эффект капель сверху -->
-            <div class="blood-drip"></div>
         </div>
     </div>
 
-    <!-- Фаза 2: Добрый монстр и текст -->
-    <div id="phase-good" class="phase">
-        <!-- Видео/гиф доброго монстра -->
-        <video id="monster2-video" class="monster-media" loop muted playsinline>
-            <source src="assets/media/monster2.mp4" type="video/mp4">
-            <source src="assets/media/monster2.webm" type="video/webm">
-            Ваш браузер не поддерживает видео.
+    <!-- Фаза 2: Ужас -->
+    <div id="phase-horror" class="phase">
+        <video id="monster1-video" class="monster-media" loop muted playsinline>
+            <source src="assets/videos/monster1.mp4" type="video/mp4">
+            <source src="assets/videos/monster1.webm" type="video/webm">
         </video>
 
-        <!-- Контейнер для текстовых сообщений -->
-        <div id="text-messages"></div>
+        <div id="blood-plate" class="hidden">
+            <div class="blood-overlay"></div>
+            <div class="blood-content">
+                <h2><span class="blood-letter">В</span>ВЕДИ СВОЁ <span class="blood-letter">И</span>МЯ</h2>
+                <input type="text" id="name-input" maxlength="20" placeholder="здесь...">
+                <button id="submit-name">ВОЙТИ</button>
+            </div>
+            <div class="blood-drip" id="drip1"></div>
+            <div class="blood-drip" id="drip2"></div>
+            <div class="blood-drip" id="drip3"></div>
+        </div>
     </div>
 
-    <!-- Аудио для капель (опционально) -->
-    <audio id="drip-sound" src="assets/media/drip-sound.mp3" preload="auto"></audio>
+    <!-- Фаза 3: История -->
+    <div id="phase-story" class="phase">
+        <video id="monster2-video" class="monster-media" loop muted playsinline>
+            <source src="assets/videos/monster2.mp4" type="video/mp4">
+            <source src="assets/videos/monster2.webm" type="video/webm">
+        </video>
 
-    <script src="assets/js/script.js"></script>
+        <div id="story-container" class="hidden">
+            <div id="story-text"></div>
+            
+            <div id="choices-container" class="hidden">
+                <button class="choice-btn" data-choice="1">ПРИНЯТЬ ПРЕДЛОЖЕНИЕ</button>
+                <button class="choice-btn" data-choice="2">ОТКАЗАТЬСЯ</button>
+                <button class="choice-btn" data-choice="3">СПРОСИТЬ ПОДРОБНОСТИ</button>
+            </div>
+
+            <div id="story-continue" class="hidden">
+                <button id="continue-btn">ПРОДОЛЖИТЬ ➜</button>
+            </div>
+        </div>
+
+        <div id="endings-container" class="hidden">
+            <div id="ending-content"></div>
+            <button id="restart-btn">НАЧАТЬ СНАЧАЛА</button>
+        </div>
+    </div>
+
+    <!-- Аудио -->
+    <audio id="drip-sound" src="assets/sounds/drip.mp3" preload="auto"></audio>
+    <audio id="monster-sound" src="assets/sounds/monster-growl.mp3" preload="auto"></audio>
+    <audio id="magic-sound" src="assets/sounds/magic.mp3" preload="auto"></audio>
+    <audio id="click-sound" src="assets/sounds/click.mp3" preload="auto"></audio>
+
+    <script src="script.js"></script>
 </body>
 </html>
