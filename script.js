@@ -1,377 +1,430 @@
+// Марш смерти под рапсодию параллельного мира
 // Основные переменные
-let playerName = '';
-let currentStoryIndex = 0;
-let currentPath = 'start';
-let storyChoices = [];
-
-// Сегменты истории
-const story = {
-    start: [
-        {
-            text: "Приветствую, {name}!",
-            delay: 3000,
-            autoContinue: true
-        },
-        {
-            text: "Зачем ты пришел?",
-            delay: 3000,
-            autoContinue: true
-        },
-        {
-            text: "Тебя никто не звал...",
-            delay: 3000,
-            autoContinue: true
-        },
-        {
-            text: "Но раз уж ты здесь...",
-            delay: 3000,
-            choices: [
-                "Я ищу приключений",
-                "Мне нужна помощь",
-                "Я просто заблудился"
-            ]
-        }
-    ],
-    
-    adventure: [
-        {
-            text: "Приключения? В этом мире они найдут тебя сами.",
-            delay: 3500,
-            autoContinue: true
-        },
-        {
-            text: "Здесь обитают драконы, порождения тьмы и герои забытых времён.",
-            delay: 4000,
-            autoContinue: true
-        },
-        {
-            text: "Хочешь присоединиться к нашей охоте на Теневого Колосса?",
-            delay: 3500,
-            choices: [
-                "Да, я готов к битве!",
-                "Сначала покажи мне команду",
-                "Мне страшно, я пас"
-            ]
-        }
-    ],
-    
-    help: [
-        {
-            text: "Помощь? Ты пришел по адресу.",
-            delay: 3000,
-            autoContinue: true
-        },
-        {
-            text: "Но здесь всё имеет свою цену.",
-            delay: 3000,
-            autoContinue: true
-        },
-        {
-            text: "Что ты можешь предложить взамен?",
-            delay: 3500,
-            choices: [
-                "Свою верность",
-                "Древние знания",
-                "Магический артефакт"
-            ]
-        }
-    ],
-    
-    lost: [
-        {
-            text: "Заблудился? В Лабиринте Вечного Мрака?",
-            delay: 3500,
-            autoContinue: true
-        },
-        {
-            text: "Ты либо очень храбрый, либо очень глупый.",
-            delay: 3000,
-            autoContinue: true
-        },
-        {
-            text: "Но у меня есть для тебя предложение...",
-            delay: 3000,
-            choices: [
-                "Слушаю",
-                "Попробую найти выход сам",
-                "Что ты хочешь?"
-            ]
-        }
-    ]
+let player = {
+    name: '',
+    hp: 100,
+    mp: 50,
+    level: 1,
+    allies: [],
+    choices: [],
+    world: 'void',
+    ending: ''
 };
 
-// Концовки
-const endings = {
-    battle_brave: "Ты стал легендой среди монстров. Твоё имя теперь упоминают в страхе и уважении. Теневой Колосс пал, но новые угрозы уже на горизонте...",
-    battle_team: "Команда приняла тебя. Вместе вы - непобедимая сила. Теперь ты часть чего-то большего, часть Братства Теней.",
-    battle_scared: "Ты сбежал, но мир монстров запомнил тебя. Они будут ждать твоего возвращения... или найдут тебя сами.",
-    help_loyalty: "Твоя верность была проверена и принята. Теперь ты страж Порога, защитник двух миров.",
-    help_knowledge: "Древние знания открыли тебе секреты магии. Ты стал Архивариусом Забытых Искусств.",
-    help_artifact: "Артефакт оказался ключом к древнему пророчеству. Тебе суждено изменить судьбу этого мира.",
-    lost_listen: "Ты стал проводником между мирами. Никто больше не заблудится, пока ты здесь.",
-    lost_alone: "Ты нашёл выход, но часть тебя осталась там, в темноте. Иногда ты слышишь зов...",
-    lost_question: "Я хочу, чтобы ты стал Хранителем Врат. Решай: принять дар или навсегда забыть этот путь?"
+let currentScreen = '404';
+let currentStoryIndex = 0;
+let isTyping = false;
+let typeSpeed = 30;
+let bgm = null;
+
+// История в стиле Death March
+const story = {
+    // Часть 1: Вторжение в параллельный мир
+    invasion: [
+        {
+            text: "● Вы открываете глаза в мире, где небо трескается как стекло...",
+            character: 'system',
+            choices: [],
+            autoContinue: true,
+            delay: 4000
+        },
+        {
+            text: "● [СУЩНОСТЬ-404] поглощает реальность вокруг. Время искажается, пространство плавится...",
+            character: 'system',
+            choices: [],
+            autoContinue: true,
+            delay: 4000
+        },
+        {
+            text: "АИНЗ: Так ты и есть тот, кто проник сквозь барьер миров?",
+            character: 'ainz',
+            choices: [
+                "Кто ты? Где я?",
+                "Что происходит?",
+                "Мне нужно вернуться!"
+            ],
+            autoContinue: false,
+            delay: 0
+        }
+    ],
+
+    // Ответ на вопрос "Кто ты?"
+    response_who: [
+        {
+            text: "АИНЗ: Я - Аинз Оал Гоун, Повелитель Назарика. Ты в параллельном мире, где правят монстры и магия.",
+            character: 'ainz',
+            choices: [],
+            autoContinue: true,
+            delay: 3500
+        },
+        {
+            text: "АИНЗ: Твое появление не было случайностью. [СУЩНОСТЬ-404] привлекла тебя как ключ.",
+            character: 'ainz',
+            choices: [
+                "Ключ? Для чего?",
+                "Как остановить это существо?",
+                "У меня нет сил для этого..."
+            ],
+            autoContinue: false,
+            delay: 0
+        }
+    ],
+
+    // Ответ на вопрос "Что происходит?"
+    response_what: [
+        {
+            text: "АИНЗ: Происходит вторжение Ничто. [СУЩНОСТЬ-404] пожирает реальность, создавая пустоту.",
+            character: 'ainz',
+            choices: [],
+            autoContinue: true,
+            delay: 3500
+        },
+        {
+            text: "АИНЗ: Только существо из другого мира может противостоять ей. Ты - наша последняя надежда.",
+            character: 'ainz',
+            choices: [
+                "Почему именно я?",
+                "Что я должен сделать?",
+                "Я не герой..."
+            ],
+            autoContinue: false,
+            delay: 0
+        }
+    ],
+
+    // Битва с существом
+    battle: [
+        {
+            text: "● [СУЩНОСТЬ-404] издает пронзительный вой. Реальность вокруг начинает сворачиваться...",
+            character: 'system',
+            choices: [],
+            autoContinue: true,
+            delay: 3000
+        },
+        {
+            text: "АИНЗ: Она пытается поглотить твою душу! Используй силу своего мира!",
+            character: 'ainz',
+            choices: [
+                "Призвать защиту воспоминаний",
+                "Атаковать силой воли",
+                "Попытаться договориться"
+            ],
+            autoContinue: false,
+            delay: 0
+        }
+    ],
+
+    // Концовки
+    endings: {
+        memory: {
+            title: "ХРАНИТЕЛЬ ВОСПОМИНАНИЙ",
+            text: "Ты использовал силу воспоминаний своего мира, создав барьер из ностальгии. [СУЩНОСТЬ-404] не смогла поглотить то, чего не понимала. Теперь ты - мост между мирами, хранитель равновесия.",
+            allies: ["Аинз", "Альбедо", "Шалтир"],
+            rank: "SS"
+        },
+        willpower: {
+            title: "ВОЛЯ НЕСГИБАЕМАЯ",
+            text: "Твоя сила воли оказалась сильнее пустоты. Ты не просто отразил атаку - ты переписал реальность вокруг. [СУЩНОСТЬ-404] была изгнана, но оставила часть своей силы в тебе.",
+            allies: ["Аинз", "Кокутсу", "Деминрг"],
+            rank: "EX"
+        },
+        negotiate: {
+            title: "ДИПЛОМАТ БЕЗДНЫ",
+            text: "Ты понял, что [СУЩНОСТЬ-404] просто одинока. Вместо битвы ты предложил союз. Теперь она - защитник параллельного мира, а ты - её связной с человечеством.",
+            allies: ["Аинз", "СУЩНОСТЬ-404", "Пандора"],
+            rank: "S"
+        }
+    }
 };
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
-    startSequence();
+    initGame();
     
-    // Обработчик ввода имени
-    document.getElementById('submit-btn').addEventListener('click', submitName);
-    document.getElementById('name-input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') submitName();
+    // Обработчики
+    document.getElementById('verify-btn').addEventListener('click', verifyAccess);
+    document.getElementById('access-code').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') verifyAccess();
     });
     
-    // Обработчик кнопки продолжения
-    document.getElementById('continue-btn').addEventListener('click', continueStory);
+    document.getElementById('next-btn').addEventListener('click', continueStory);
+    document.getElementById('auto-btn').addEventListener('click', toggleAuto);
+    document.getElementById('skip-btn').addEventListener('click', skipDialogue);
+    document.getElementById('new-game-btn').addEventListener('click', newGame);
     
-    // Обработчик перезапуска
-    document.getElementById('restart-btn').addEventListener('click', restartGame);
+    // Инициализация аудио
+    initAudio();
 });
 
-// Начальная последовательность
-function startSequence() {
-    // 1. Показать ошибку 404
+function initGame() {
+    // Начать с экрана 404
     showScreen('screen-404');
-    
-    // 2. Через 2 секунды начать мигание
+    start404Sequence();
+}
+
+function initAudio() {
+    bgm = document.getElementById('bgm-main');
+    // Установить громкость
+    if (bgm) bgm.volume = 0.5;
+}
+
+// Последовательность 404
+function start404Sequence() {
+    // Мигание глитчей
     setTimeout(() => {
-        startBlinking();
+        startGlitching();
         
-        // 3. Через 4 секунды перейти к монстру
+        // Через 4 секунды - переход к монстру
         setTimeout(() => {
-            showMonster();
+            showMonsterSequence();
         }, 4000);
     }, 2000);
 }
 
-// Мигание ошибки 404
-function startBlinking() {
-    const digits = document.querySelectorAll('.digit');
-    const errorText = document.querySelector('.error-text');
+function startGlitching() {
+    const glitchElements = document.querySelectorAll('.glitching');
+    let glitchCount = 0;
     
-    let blinkCount = 0;
-    const blinkInterval = setInterval(() => {
-        digits.forEach(digit => {
-            digit.style.animation = 'none';
-            setTimeout(() => {
-                digit.style.animation = 'glow 2s infinite alternate';
-            }, 100);
+    const glitchInterval = setInterval(() => {
+        glitchElements.forEach(el => {
+            el.style.color = getRandomColor();
+            el.style.transform = `translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`;
         });
         
-        errorText.style.opacity = errorText.style.opacity === '0.3' ? '1' : '0.3';
+        // Проиграть звук глитча
+        playSound('sfx-glitch');
         
-        blinkCount++;
-        if (blinkCount >= 6) {
-            clearInterval(blinkInterval);
+        glitchCount++;
+        if (glitchCount >= 8) {
+            clearInterval(glitchInterval);
             
             // Исчезновение
-            const errorContainer = document.querySelector('.error-container');
-            errorContainer.style.animation = 'fadeOut 2s ease forwards';
+            document.querySelector('.glitch-container').style.opacity = '0';
+            document.querySelector('.glitch-container').style.transition = 'opacity 2s ease';
             
-            // Воспроизвести страшный звук
-            playSound('sound-scary');
+            // Темнота
+            setTimeout(() => {
+                document.getElementById('screen-404').style.backgroundColor = '#000';
+            }, 1000);
         }
-    }, 500);
+    }, 300);
 }
 
-// Показать монстра
-function showMonster() {
+function showMonsterSequence() {
     showScreen('screen-monster');
+    const monsterVideo = document.getElementById('void-monster');
     
-    const monsterVideo = document.getElementById('monster-video');
-    
-    // Запустить видео монстра
+    // Запустить видео
     monsterVideo.style.opacity = '1';
     monsterVideo.play();
     
-    // Монстр исчезает через 1.2 секунды
+    // Исчезновение через 1.2 секунды
     setTimeout(() => {
         monsterVideo.style.opacity = '0';
         monsterVideo.style.transition = 'opacity 1.2s ease';
         
-        // Показать кровавую табличку
+        // Показать интерфейс взлома
         setTimeout(() => {
-            showBloodScreen();
+            showInterface();
         }, 1200);
     }, 1200);
 }
 
-// Показать кровавый экран
-function showBloodScreen() {
-    showScreen('screen-blood');
+function showInterface() {
+    showScreen('screen-interface');
     
-    // Запустить звук капель
-    playSound('sound-drip');
-    
-    // Анимация появления таблички
-    const bloodPlate = document.querySelector('.blood-plate');
-    bloodPlate.style.transform = 'scale(0)';
-    bloodPlate.style.opacity = '0';
+    // Анимация появления терминала
+    const terminal = document.querySelector('.terminal-window');
+    terminal.style.transform = 'scale(0)';
+    terminal.style.opacity = '0';
     
     setTimeout(() => {
-        bloodPlate.style.transition = 'all 1s ease';
-        bloodPlate.style.transform = 'scale(1)';
-        bloodPlate.style.opacity = '1';
+        terminal.style.transition = 'all 1s ease';
+        terminal.style.transform = 'scale(1)';
+        terminal.style.opacity = '1';
         
-        // Фокус на поле ввода
-        document.getElementById('name-input').focus();
+        // Запустить звук печати
+        playSound('sfx-type');
+        
+        // Автоматический ввод команды
+        typeTerminalText();
     }, 500);
 }
 
-// Обработка ввода имени
-function submitName() {
-    const nameInput = document.getElementById('name-input');
+function typeTerminalText() {
+    const terminalText = document.querySelector('.terminal-text');
+    const originalHTML = terminalText.innerHTML;
+    terminalText.innerHTML = '';
+    
+    const lines = [
+        "root@parallel-world:~$ ",
+        "scan_intruder.exe",
+        "",
+        "＞＞ ОБНАРУЖЕНА УГРОЗА: [СУЩНОСТЬ-404]",
+        "＞＞ МЕСТОПОЛОЖЕНИЕ: ПАРАЛЛЕЛЬНЫЙ СЕКТОР [死亡行進]",
+        "＞＞ ТРЕБУЕТСЯ ИДЕНТИФИКАЦИЯ..."
+    ];
+    
+    let lineIndex = 0;
+    let charIndex = 0;
+    
+    function typeChar() {
+        if (lineIndex < lines.length) {
+            if (charIndex === 0) {
+                terminalText.innerHTML += '<br>';
+            }
+            
+            if (charIndex < lines[lineIndex].length) {
+                terminalText.innerHTML += lines[lineIndex].charAt(charIndex);
+                charIndex++;
+                setTimeout(typeChar, 50);
+            } else {
+                lineIndex++;
+                charIndex = 0;
+                setTimeout(typeChar, 500);
+            }
+        } else {
+            // Показать поле ввода
+            document.querySelector('.input-section').style.opacity = '1';
+            document.querySelector('.input-section').style.transition = 'opacity 1s ease';
+            
+            // Фокус на поле ввода
+            document.getElementById('access-code').focus();
+        }
+    }
+    
+    typeChar();
+}
+
+function verifyAccess() {
+    const nameInput = document.getElementById('access-code');
     const name = nameInput.value.trim();
     
     if (!name) {
-        // Анимация ошибки
+        // Эффект ошибки
         nameInput.style.borderColor = '#ff0000';
         nameInput.style.boxShadow = '0 0 20px #ff0000';
+        playSound('sfx-glitch');
+        
         setTimeout(() => {
-            nameInput.style.borderColor = '#8b0000';
+            nameInput.style.borderColor = 'var(--blood-red)';
             nameInput.style.boxShadow = 'none';
         }, 1000);
         return;
     }
     
-    playerName = name;
+    player.name = name;
     
-    // Эффект исчезновения
-    const bloodPlate = document.querySelector('.blood-plate');
-    bloodPlate.style.opacity = '0';
-    bloodPlate.style.transform = 'scale(0.5)';
+    // Эффект подтверждения
+    document.querySelector('.hack-button').innerHTML = 'ДОСТУП РАЗРЕШЕН';
+    document.querySelector('.hack-button').style.background = 'linear-gradient(45deg, #00ff00, #008800)';
     
-    // Затемнение экрана
-    const screen = document.getElementById('screen-blood');
-    screen.style.backgroundColor = '#fff';
-    screen.style.transition = 'background-color 2s ease';
+    playSound('sfx-victory');
     
     // Переход к приветствию
     setTimeout(() => {
-        showWelcomeScreen();
-    }, 2000);
+        showWelcome();
+    }, 1500);
 }
 
-// Показать экран приветствия
-function showWelcomeScreen() {
+function showWelcome() {
     showScreen('screen-welcome');
     
-    const welcomeText = document.getElementById('welcome-text');
-    const fullText = `ПРИВЕТСТВУЮ, ${playerName.toUpperCase()}!`;
+    const nameDisplay = document.getElementById('player-name-display');
+    nameDisplay.textContent = player.name.toUpperCase();
     
-    // Эффект печатания текста
-    typeText(welcomeText, fullText, 100, () => {
-        // Исчезновение через 2 секунды
-        setTimeout(() => {
-            welcomeText.style.animation = 'fadeOut 2s ease forwards';
-            
-            // Показать доброго монстра
-            setTimeout(() => {
-                showFriendlyMonster();
-            }, 2000);
-        }, 2000);
-    });
-}
-
-// Показать доброго монстра
-function showFriendlyMonster() {
-    showScreen('screen-story');
+    // Запустить BGM
+    if (bgm) {
+        bgm.play().catch(e => console.log("BGM autoplay blocked"));
+    }
     
-    const friendlyMonster = document.getElementById('friendly-monster');
-    
-    // Анимация вылета из угла
-    friendlyMonster.style.opacity = '1';
-    friendlyMonster.style.left = '-50%';
-    friendlyMonster.style.top = '-50%';
-    friendlyMonster.style.transition = 'all 1.2s ease';
-    
+    // Автоматический переход к истории
     setTimeout(() => {
-        friendlyMonster.play();
-        friendlyMonster.style.left = '50%';
-        friendlyMonster.style.top = '50%';
-        friendlyMonster.style.transform = 'translate(-50%, -50%)';
-        
-        // Исчезновение через 1.2 секунды
-        setTimeout(() => {
-            friendlyMonster.style.opacity = '0';
-            
-            // Начать историю
-            setTimeout(() => {
-                startStory();
-            }, 1200);
-        }, 1200);
-    }, 100);
-    
-    // Магический звук
-    playSound('sound-magic');
+        startStory();
+    }, 5000);
 }
 
-// Начать историю
 function startStory() {
+    showScreen('screen-story');
     currentStoryIndex = 0;
-    currentPath = 'start';
-    storyChoices = [];
     
-    // Показать контейнер истории
-    document.querySelector('.story-container').style.opacity = '1';
+    // Показать спрайт Аинза
+    const sprite = document.getElementById('sprite-ainz');
+    sprite.style.background = 'linear-gradient(45deg, #2d545e, #12343b)';
+    sprite.innerHTML = '●';
+    sprite.style.display = 'flex';
+    sprite.style.justifyContent = 'center';
+    sprite.style.alignItems = 'center';
+    sprite.style.fontSize = '5rem';
+    sprite.style.color = 'white';
     
-    // Показать первую часть истории
-    showStoryPart();
+    // Начать повествование
+    showStorySegment('invasion');
 }
 
-// Показать часть истории
-function showStoryPart() {
-    const storyText = document.getElementById('story-text');
-    const choicesContainer = document.getElementById('choices');
-    const continueBtn = document.getElementById('continue-btn');
-    
-    // Очистить предыдущий контент
-    storyText.innerHTML = '';
-    choicesContainer.innerHTML = '';
-    choicesContainer.classList.add('hidden');
-    continueBtn.classList.add('hidden');
-    
-    // Получить текущую часть
-    const storyPart = story[currentPath][currentStoryIndex];
-    if (!storyPart) {
-        showEnding();
+function showStorySegment(segment) {
+    const segmentData = story[segment];
+    if (!segmentData || currentStoryIndex >= segmentData.length) {
+        // Переход к следующей части или концовке
+        if (segment === 'invasion') {
+            // После вторжения - битва
+            showBattle();
+        } else {
+            showEnding();
+        }
         return;
     }
     
-    // Заменить имя в тексте
-    let text = storyPart.text.replace('{name}', playerName);
+    const storyPart = segmentData[currentStoryIndex];
+    const storyText = document.getElementById('story-text');
+    const choicesContainer = document.getElementById('choices-container');
     
-    // Показать текст
-    typeText(storyText, text, 50, () => {
-        // Если есть выборы
-        if (storyPart.choices) {
+    // Очистить
+    storyText.innerHTML = '';
+    choicesContainer.innerHTML = '';
+    choicesContainer.classList.add('hidden');
+    
+    // Обновить имя персонажа
+    const charName = document.querySelector('.character-name');
+    charName.textContent = `● ${storyPart.character.toUpperCase()}`;
+    
+    // Напечатать текст
+    isTyping = true;
+    typeText(storyText, storyPart.text, typeSpeed, () => {
+        isTyping = false;
+        
+        // Показать выборы если есть
+        if (storyPart.choices && storyPart.choices.length > 0) {
+            showChoices(storyPart.choices, segment);
+        } else if (storyPart.autoContinue) {
+            // Автоматическое продолжение
             setTimeout(() => {
-                showChoices(storyPart.choices);
-            }, 500);
-        }
-        // Если авто-продолжение
-        else if (storyPart.autoContinue) {
-            setTimeout(() => {
-                continueBtn.classList.remove('hidden');
-            }, 500);
+                currentStoryIndex++;
+                showStorySegment(segment);
+            }, storyPart.delay);
         }
     });
 }
 
-// Показать варианты выбора
-function showChoices(choices) {
-    const choicesContainer = document.getElementById('choices');
+function showChoices(choices, segment) {
+    const choicesContainer = document.getElementById('choices-container');
+    choicesContainer.innerHTML = '';
     
     choices.forEach((choice, index) => {
         const button = document.createElement('button');
-        button.className = 'choice-btn';
+        button.className = 'choice-option';
         button.textContent = choice;
-        button.dataset.choice = index;
         
         button.addEventListener('click', () => {
-            makeChoice(choice);
+            if (isTyping) return;
+            
+            player.choices.push(choice);
+            playSound('sfx-type');
+            
+            // Определить следующую часть истории
+            let nextSegment = getNextSegment(segment, index);
+            currentStoryIndex = 0;
+            showStorySegment(nextSegment);
         });
         
         choicesContainer.appendChild(button);
@@ -380,78 +433,107 @@ function showChoices(choices) {
     choicesContainer.classList.remove('hidden');
 }
 
-// Обработка выбора
-function makeChoice(choice) {
-    storyChoices.push(choice);
-    
-    // Определить следующий путь
-    if (currentPath === 'start') {
-        if (choice.includes('приключений')) currentPath = 'adventure';
-        else if (choice.includes('помощь')) currentPath = 'help';
-        else if (choice.includes('заблудился')) currentPath = 'lost';
+function getNextSegment(currentSegment, choiceIndex) {
+    switch(currentSegment) {
+        case 'invasion':
+            if (choiceIndex === 0) return 'response_who';
+            if (choiceIndex === 1) return 'response_what';
+            return 'battle';
+        case 'response_who':
+        case 'response_what':
+            return 'battle';
+        case 'battle':
+            // Определить концовку по выбору
+            if (choiceIndex === 0) player.ending = 'memory';
+            else if (choiceIndex === 1) player.ending = 'willpower';
+            else player.ending = 'negotiate';
+            return 'end';
+        default:
+            return 'end';
     }
+}
+
+function showBattle() {
+    // Показать боевой интерфейс
+    document.querySelector('.battle-ui').classList.remove('hidden');
     
-    currentStoryIndex = 0;
-    showStoryPart();
+    // Анимация HP баров
+    const playerHP = document.querySelector('.player .hp-fill');
+    const enemyHP = document.querySelector('.enemy .hp-fill');
+    
+    let playerHpValue = 100;
+    let enemyHpValue = 100;
+    
+    // Боевая анимация
+    const battleInterval = setInterval(() => {
+        playerHpValue -= Math.random() * 10;
+        enemyHpValue -= Math.random() * 15;
+        
+        playerHP.style.width = `${Math.max(0, playerHpValue)}%`;
+        enemyHP.style.width = `${Math.max(0, enemyHpValue)}%`;
+        
+        document.querySelector('.player .hp-value').textContent = 
+            `${Math.max(0, Math.round(playerHpValue))}/100`;
+        document.querySelector('.enemy .hp-value').textContent = 
+            `${Math.max(0, Math.round(enemyHpValue))}/???`;
+        
+        if (enemyHpValue <= 0) {
+            clearInterval(battleInterval);
+            setTimeout(() => {
+                document.querySelector('.battle-ui').classList.add('hidden');
+                currentStoryIndex = 0;
+                showStorySegment('battle');
+            }, 1000);
+        }
+        
+        if (playerHpValue <= 0) {
+            clearInterval(battleInterval);
+            player.ending = 'defeat';
+            showEnding();
+        }
+    }, 500);
+    
+    // Звук битвы
+    playSound('sfx-battle');
 }
 
-// Продолжить историю
-function continueStory() {
-    currentStoryIndex++;
-    showStoryPart();
-}
-
-// Показать концовку
 function showEnding() {
-    // Определить концовку на основе выбора
-    let endingKey = '';
-    
-    if (currentPath === 'adventure') {
-        if (storyChoices[1]?.includes('готов')) endingKey = 'battle_brave';
-        else if (storyChoices[1]?.includes('команду')) endingKey = 'battle_team';
-        else endingKey = 'battle_scared';
-    } else if (currentPath === 'help') {
-        if (storyChoices[1]?.includes('верность')) endingKey = 'help_loyalty';
-        else if (storyChoices[1]?.includes('знания')) endingKey = 'help_knowledge';
-        else endingKey = 'help_artifact';
-    } else if (currentPath === 'lost') {
-        if (storyChoices[1]?.includes('Слушаю')) endingKey = 'lost_listen';
-        else if (storyChoices[1]?.includes('сам')) endingKey = 'lost_alone';
-        else endingKey = 'lost_question';
-    }
-    
-    const endingText = endings[endingKey] || 
-        "Твоя история ещё не закончена. Мир монстров ждёт твоего возвращения...";
-    
-    // Показать экран концовки
     showScreen('screen-ending');
     
-    const endingElement = document.getElementById('ending-text');
-    typeText(endingElement, endingText, 30);
-}
-
-// Перезапуск игры
-function restartGame() {
-    // Сбросить все переменные
-    playerName = '';
-    currentStoryIndex = 0;
-    currentPath = 'start';
-    storyChoices = [];
+    const endingData = story.endings[player.ending] || {
+        title: "НЕИЗВЕСТНЫЙ ИСХОД",
+        text: "Твоя история обрывается здесь. Возможно, в другой реальности...",
+        allies: ["???"],
+        rank: "?"
+    };
     
-    // Сбросить все экраны
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-        screen.style.opacity = '0';
-    });
+    const endingText = document.getElementById('ending-text');
+    const allyCount = document.getElementById('ally-count');
+    const playerRank = document.getElementById('player-rank');
+    const creditName = document.getElementById('credit-name');
     
-    // Перезапустить видео
-    document.getElementById('monster-video').currentTime = 0;
-    document.getElementById('friendly-monster').currentTime = 0;
+    // Показать текст концовки
+    typeText(endingText, 
+        `<strong>${endingData.title}</strong><br><br>${endingData.text}<br><br>
+        Ты преодолел Марш Смерти и нашел свой путь в параллельном мире. 
+        Твоё путешествие только начинается...`, 
+        typeSpeed);
     
-    // Начать сначала
+    // Обновить статистику
+    allyCount.textContent = endingData.allies.length;
+    playerRank.textContent = endingData.rank;
+    creditName.textContent = player.name;
+    
+    // Показать список союзников
     setTimeout(() => {
-        startSequence();
-    }, 500);
+        endingText.innerHTML += `<br><br><strong>СОЮЗНИКИ:</strong><br>`;
+        endingData.allies.forEach(ally => {
+            endingText.innerHTML += `● ${ally}<br>`;
+        });
+    }, 3000);
+    
+    // Запустить победную музыку
+    playSound('sfx-victory');
 }
 
 // Вспомогательные функции
@@ -460,29 +542,122 @@ function showScreen(screenId) {
         screen.classList.remove('active');
     });
     document.getElementById(screenId).classList.add('active');
+    currentScreen = screenId;
 }
 
 function typeText(element, text, speed, callback) {
+    isTyping = true;
     element.innerHTML = '';
     let i = 0;
     
-    function typeChar() {
+    const typeInterval = setInterval(() => {
         if (i < text.length) {
             element.innerHTML += text.charAt(i);
             i++;
-            setTimeout(typeChar, speed);
-        } else if (callback) {
-            callback();
+            // Звук печати
+            if (i % 3 === 0) playSound('sfx-type', 0.1);
+        } else {
+            clearInterval(typeInterval);
+            isTyping = false;
+            if (callback) callback();
         }
-    }
-    
-    typeChar();
+    }, speed);
 }
 
-function playSound(soundId) {
+function playSound(soundId, volume = 1) {
     const sound = document.getElementById(soundId);
     if (sound) {
         sound.currentTime = 0;
-        sound.play().catch(e => console.log("Автовоспроизведение заблокировано"));
+        sound.volume = volume;
+        sound.play().catch(e => console.log("Sound play blocked"));
     }
+}
+
+function getRandomColor() {
+    const colors = ['#ff00ff', '#00ffff', '#ffff00', '#ff0000', '#00ff00'];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function continueStory() {
+    if (isTyping) {
+        // Пропустить печатание
+        const storyText = document.getElementById('story-text');
+        storyText.style.animation = 'none';
+        isTyping = false;
+        return;
+    }
+    
+    currentStoryIndex++;
+    
+    // Определить текущий сегмент
+    let currentSegment = 'invasion';
+    if (player.choices.length > 0) {
+        currentSegment = getCurrentSegment();
+    }
+    
+    showStorySegment(currentSegment);
+}
+
+function getCurrentSegment() {
+    // Простая логика определения текущего сегмента
+    if (player.choices.some(c => c.includes('Кто ты') || c.includes('Что происходит'))) {
+        return player.choices.length > 1 ? 'battle' : 'response_who';
+    }
+    return 'invasion';
+}
+
+function toggleAuto() {
+    // Режим авто-чтения (упрощенная версия)
+    const autoBtn = document.getElementById('auto-btn');
+    autoBtn.classList.toggle('active');
+    
+    if (autoBtn.classList.contains('active')) {
+        // Запустить авто-чтение
+        startAutoMode();
+    }
+}
+
+function startAutoMode() {
+    if (!isTyping && currentScreen === 'screen-story') {
+        setTimeout(() => {
+            if (document.getElementById('auto-btn').classList.contains('active')) {
+                continueStory();
+                startAutoMode();
+            }
+        }, 3000);
+    }
+}
+
+function skipDialogue() {
+    // Перейти сразу к концовке (для тестирования)
+    player.ending = 'memory';
+    showEnding();
+}
+
+function newGame() {
+    // Сброс игры
+    player = {
+        name: '',
+        hp: 100,
+        mp: 50,
+        level: 1,
+        allies: [],
+        choices: [],
+        world: 'void',
+        ending: ''
+    };
+    
+    // Сбросить все экраны
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+        screen.style.opacity = '1';
+    });
+    
+    // Сбросить видео
+    document.getElementById('void-monster').currentTime = 0;
+    
+    // Начать сначала
+    setTimeout(() => {
+        initGame();
+    }, 500);
 }
