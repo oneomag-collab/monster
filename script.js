@@ -1,539 +1,598 @@
-// Марш смерти под рапсодию параллельного мира
+// Манга: Смертельный Марш в Параллельный Мир
 // Основные переменные
 let player = {
     name: '',
-    hp: 100,
-    mp: 50,
-    level: 1,
-    allies: [],
     choices: [],
-    world: 'void',
+    allies: ['Аинз', 'Альбедо', 'Шалтир'],
+    stats: {
+        level: 1,
+        hp: 100,
+        mp: 50,
+        strength: 10,
+        intelligence: 8,
+        luck: 5
+    },
     ending: ''
 };
 
-let currentScreen = '404';
-let currentStoryIndex = 0;
-let isTyping = false;
-let typeSpeed = 30;
-let bgm = null;
-
-// История в стиле Death March
-const story = {
-    // Часть 1: Вторжение в параллельный мир
-    invasion: [
-        {
-            text: "● Вы открываете глаза в мире, где небо трескается как стекло...",
-            character: 'system',
-            choices: [],
-            autoContinue: true,
-            delay: 4000
-        },
-        {
-            text: "● [СУЩНОСТЬ-404] поглощает реальность вокруг. Время искажается, пространство плавится...",
-            character: 'system',
-            choices: [],
-            autoContinue: true,
-            delay: 4000
-        },
-        {
-            text: "АИНЗ: Так ты и есть тот, кто проник сквозь барьер миров?",
-            character: 'ainz',
-            choices: [
-                "Кто ты? Где я?",
-                "Что происходит?",
-                "Мне нужно вернуться!"
-            ],
-            autoContinue: false,
-            delay: 0
-        }
-    ],
-
-    // Ответ на вопрос "Кто ты?"
-    response_who: [
-        {
-            text: "АИНЗ: Я - Аинз Оал Гоун, Повелитель Назарика. Ты в параллельном мире, где правят монстры и магия.",
-            character: 'ainz',
-            choices: [],
-            autoContinue: true,
-            delay: 3500
-        },
-        {
-            text: "АИНЗ: Твое появление не было случайностью. [СУЩНОСТЬ-404] привлекла тебя как ключ.",
-            character: 'ainz',
-            choices: [
-                "Ключ? Для чего?",
-                "Как остановить это существо?",
-                "У меня нет сил для этого..."
-            ],
-            autoContinue: false,
-            delay: 0
-        }
-    ],
-
-    // Ответ на вопрос "Что происходит?"
-    response_what: [
-        {
-            text: "АИНЗ: Происходит вторжение Ничто. [СУЩНОСТЬ-404] пожирает реальность, создавая пустоту.",
-            character: 'ainz',
-            choices: [],
-            autoContinue: true,
-            delay: 3500
-        },
-        {
-            text: "АИНЗ: Только существо из другого мира может противостоять ей. Ты - наша последняя надежда.",
-            character: 'ainz',
-            choices: [
-                "Почему именно я?",
-                "Что я должен сделать?",
-                "Я не герой..."
-            ],
-            autoContinue: false,
-            delay: 0
-        }
-    ],
-
-    // Битва с существом
-    battle: [
-        {
-            text: "● [СУЩНОСТЬ-404] издает пронзительный вой. Реальность вокруг начинает сворачиваться...",
-            character: 'system',
-            choices: [],
-            autoContinue: true,
-            delay: 3000
-        },
-        {
-            text: "АИНЗ: Она пытается поглотить твою душу! Используй силу своего мира!",
-            character: 'ainz',
-            choices: [
-                "Призвать защиту воспоминаний",
-                "Атаковать силой воли",
-                "Попытаться договориться"
-            ],
-            autoContinue: false,
-            delay: 0
-        }
-    ],
-
-    // Концовки
-    endings: {
-        memory: {
-            title: "ХРАНИТЕЛЬ ВОСПОМИНАНИЙ",
-            text: "Ты использовал силу воспоминаний своего мира, создав барьер из ностальгии. [СУЩНОСТЬ-404] не смогла поглотить то, чего не понимала. Теперь ты - мост между мирами, хранитель равновесия.",
-            allies: ["Аинз", "Альбедо", "Шалтир"],
-            rank: "SS"
-        },
-        willpower: {
-            title: "ВОЛЯ НЕСГИБАЕМАЯ",
-            text: "Твоя сила воли оказалась сильнее пустоты. Ты не просто отразил атаку - ты переписал реальность вокруг. [СУЩНОСТЬ-404] была изгнана, но оставила часть своей силы в тебе.",
-            allies: ["Аинз", "Кокутсу", "Деминрг"],
-            rank: "EX"
-        },
-        negotiate: {
-            title: "ДИПЛОМАТ БЕЗДНЫ",
-            text: "Ты понял, что [СУЩНОСТЬ-404] просто одинока. Вместо битвы ты предложил союз. Теперь она - защитник параллельного мира, а ты - её связной с человечеством.",
-            allies: ["Аинз", "СУЩНОСТЬ-404", "Пандора"],
-            rank: "S"
-        }
-    }
+let currentPage = 'cover';
+let gameState = {
+    battleHp: 85,
+    battleMp: 30,
+    enemyHp: 70,
+    chapter: 1
 };
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
     initGame();
     
-    // Обработчики
-    document.getElementById('verify-btn').addEventListener('click', verifyAccess);
-    document.getElementById('access-code').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') verifyAccess();
+    // Обработчики кнопок
+    document.getElementById('start-reading').addEventListener('click', startReading);
+    document.getElementById('confirm-name').addEventListener('click', confirmName);
+    document.getElementById('restart-btn').addEventListener('click', restartGame);
+    
+    // Обработчики перелистывания страниц
+    document.querySelectorAll('.next-page').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const nextPage = this.dataset.next;
+            if (nextPage) turnPage(nextPage);
+        });
     });
     
-    document.getElementById('next-btn').addEventListener('click', continueStory);
-    document.getElementById('auto-btn').addEventListener('click', toggleAuto);
-    document.getElementById('skip-btn').addEventListener('click', skipDialogue);
-    document.getElementById('new-game-btn').addEventListener('click', newGame);
+    document.querySelectorAll('.prev-page').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const prevPage = this.dataset.prev;
+            if (prevPage) turnPage(prevPage);
+        });
+    });
     
-    // Инициализация аудио
-    initAudio();
+    // Обработчики выбора
+    document.querySelectorAll('.choice-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const choice = this.dataset.choice;
+            makeChoice(choice);
+        });
+    });
+    
+    // Обработчики боевых действий
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const action = this.dataset.action;
+            performBattleAction(action);
+        });
+    });
+    
+    // Автофокус на поле имени
+    const nameInput = document.getElementById('player-name');
+    if (nameInput) {
+        nameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') confirmName();
+        });
+    }
 });
 
 function initGame() {
-    // Начать с экрана 404
-    showScreen('screen-404');
-    start404Sequence();
-}
-
-function initAudio() {
-    bgm = document.getElementById('bgm-main');
-    // Установить громкость
-    if (bgm) bgm.volume = 0.5;
-}
-
-// Последовательность 404
-function start404Sequence() {
-    // Мигание глитчей
-    setTimeout(() => {
-        startGlitching();
-        
-        // Через 4 секунды - переход к монстру
-        setTimeout(() => {
-            showMonsterSequence();
-        }, 4000);
-    }, 2000);
-}
-
-function startGlitching() {
-    const glitchElements = document.querySelectorAll('.glitching');
-    let glitchCount = 0;
+    // Показать обложку
+    showScreen('screen-cover');
     
-    const glitchInterval = setInterval(() => {
-        glitchElements.forEach(el => {
-            el.style.color = getRandomColor();
-            el.style.transform = `translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`;
+    // Сброс состояния
+    player = {
+        name: '',
+        choices: [],
+        allies: ['Аинз', 'Альбедо', 'Шалтир'],
+        stats: {
+            level: 1,
+            hp: 100,
+            mp: 50,
+            strength: 10,
+            intelligence: 8,
+            luck: 5
+        },
+        ending: ''
+    };
+    
+    gameState = {
+        battleHp: 85,
+        battleMp: 30,
+        enemyHp: 70,
+        chapter: 1
+    };
+    
+    // Анимация обложки
+    animateCover();
+}
+
+function animateCover() {
+    const eyes = document.querySelectorAll('.char-eye');
+    let blinkCount = 0;
+    
+    const blinkInterval = setInterval(() => {
+        eyes.forEach(eye => {
+            eye.style.height = eye.style.height === '30px' ? '60px' : '30px';
         });
         
-        // Проиграть звук глитча
-        playSound('sfx-glitch');
-        
-        glitchCount++;
-        if (glitchCount >= 8) {
-            clearInterval(glitchInterval);
-            
-            // Исчезновение
-            document.querySelector('.glitch-container').style.opacity = '0';
-            document.querySelector('.glitch-container').style.transition = 'opacity 2s ease';
-            
-            // Темнота
-            setTimeout(() => {
-                document.getElementById('screen-404').style.backgroundColor = '#000';
-            }, 1000);
+        blinkCount++;
+        if (blinkCount >= 6) {
+            clearInterval(blinkInterval);
+            eyes.forEach(eye => {
+                eye.style.height = '60px';
+            });
         }
-    }, 300);
-}
-
-function showMonsterSequence() {
-    showScreen('screen-monster');
-    const monsterVideo = document.getElementById('void-monster');
-    
-    // Запустить видео
-    monsterVideo.style.opacity = '1';
-    monsterVideo.play();
-    
-    // Исчезновение через 1.2 секунды
-    setTimeout(() => {
-        monsterVideo.style.opacity = '0';
-        monsterVideo.style.transition = 'opacity 1.2s ease';
-        
-        // Показать интерфейс взлома
-        setTimeout(() => {
-            showInterface();
-        }, 1200);
-    }, 1200);
-}
-
-function showInterface() {
-    showScreen('screen-interface');
-    
-    // Анимация появления терминала
-    const terminal = document.querySelector('.terminal-window');
-    terminal.style.transform = 'scale(0)';
-    terminal.style.opacity = '0';
-    
-    setTimeout(() => {
-        terminal.style.transition = 'all 1s ease';
-        terminal.style.transform = 'scale(1)';
-        terminal.style.opacity = '1';
-        
-        // Запустить звук печати
-        playSound('sfx-type');
-        
-        // Автоматический ввод команды
-        typeTerminalText();
     }, 500);
+    
+    // Мигание текста ошибки
+    const errorText = document.querySelector('.panel-text');
+    setInterval(() => {
+        errorText.style.opacity = errorText.style.opacity === '0.7' ? '1' : '0.7';
+    }, 800);
 }
 
-function typeTerminalText() {
-    const terminalText = document.querySelector('.terminal-text');
-    const originalHTML = terminalText.innerHTML;
-    terminalText.innerHTML = '';
-    
-    const lines = [
-        "root@parallel-world:~$ ",
-        "scan_intruder.exe",
-        "",
-        "＞＞ ОБНАРУЖЕНА УГРОЗА: [СУЩНОСТЬ-404]",
-        "＞＞ МЕСТОПОЛОЖЕНИЕ: ПАРАЛЛЕЛЬНЫЙ СЕКТОР [死亡行進]",
-        "＞＞ ТРЕБУЕТСЯ ИДЕНТИФИКАЦИЯ..."
-    ];
-    
-    let lineIndex = 0;
-    let charIndex = 0;
-    
-    function typeChar() {
-        if (lineIndex < lines.length) {
-            if (charIndex === 0) {
-                terminalText.innerHTML += '<br>';
-            }
-            
-            if (charIndex < lines[lineIndex].length) {
-                terminalText.innerHTML += lines[lineIndex].charAt(charIndex);
-                charIndex++;
-                setTimeout(typeChar, 50);
-            } else {
-                lineIndex++;
-                charIndex = 0;
-                setTimeout(typeChar, 500);
-            }
-        } else {
-            // Показать поле ввода
-            document.querySelector('.input-section').style.opacity = '1';
-            document.querySelector('.input-section').style.transition = 'opacity 1s ease';
-            
-            // Фокус на поле ввода
-            document.getElementById('access-code').focus();
-        }
-    }
-    
-    typeChar();
+function startReading() {
+    // Показать модальное окно для ввода имени
+    showNameModal();
 }
 
-function verifyAccess() {
-    const nameInput = document.getElementById('access-code');
+function showNameModal() {
+    const modal = document.getElementById('name-modal');
+    modal.style.display = 'flex';
+    
+    // Анимация появления
+    setTimeout(() => {
+        modal.querySelector('.modal-content').style.transform = 'scale(1)';
+        modal.querySelector('.modal-content').style.opacity = '1';
+    }, 100);
+    
+    // Фокус на поле ввода
+    document.getElementById('player-name').focus();
+}
+
+function confirmName() {
+    const nameInput = document.getElementById('player-name');
     const name = nameInput.value.trim();
     
     if (!name) {
         // Эффект ошибки
-        nameInput.style.borderColor = '#ff0000';
-        nameInput.style.boxShadow = '0 0 20px #ff0000';
-        playSound('sfx-glitch');
-        
+        nameInput.style.borderColor = 'var(--manga-red)';
+        nameInput.style.animation = 'flicker 0.5s';
         setTimeout(() => {
-            nameInput.style.borderColor = 'var(--blood-red)';
-            nameInput.style.boxShadow = 'none';
-        }, 1000);
+            nameInput.style.animation = '';
+        }, 500);
         return;
     }
     
     player.name = name;
     
-    // Эффект подтверждения
-    document.querySelector('.hack-button').innerHTML = 'ДОСТУП РАЗРЕШЕН';
-    document.querySelector('.hack-button').style.background = 'linear-gradient(45deg, #00ff00, #008800)';
+    // Закрыть модальное окно
+    const modal = document.getElementById('name-modal');
+    modal.querySelector('.modal-content').style.transform = 'scale(0.8)';
+    modal.querySelector('.modal-content').style.opacity = '0';
     
-    playSound('sfx-victory');
-    
-    // Переход к приветствию
     setTimeout(() => {
-        showWelcome();
-    }, 1500);
-}
-
-function showWelcome() {
-    showScreen('screen-welcome');
-    
-    const nameDisplay = document.getElementById('player-name-display');
-    nameDisplay.textContent = player.name.toUpperCase();
-    
-    // Запустить BGM
-    if (bgm) {
-        bgm.play().catch(e => console.log("BGM autoplay blocked"));
-    }
-    
-    // Автоматический переход к истории
-    setTimeout(() => {
-        startStory();
-    }, 5000);
-}
-
-function startStory() {
-    showScreen('screen-story');
-    currentStoryIndex = 0;
-    
-    // Показать спрайт Аинза
-    const sprite = document.getElementById('sprite-ainz');
-    sprite.style.background = 'linear-gradient(45deg, #2d545e, #12343b)';
-    sprite.innerHTML = '●';
-    sprite.style.display = 'flex';
-    sprite.style.justifyContent = 'center';
-    sprite.style.alignItems = 'center';
-    sprite.style.fontSize = '5rem';
-    sprite.style.color = 'white';
-    
-    // Начать повествование
-    showStorySegment('invasion');
-}
-
-function showStorySegment(segment) {
-    const segmentData = story[segment];
-    if (!segmentData || currentStoryIndex >= segmentData.length) {
-        // Переход к следующей части или концовке
-        if (segment === 'invasion') {
-            // После вторжения - битва
-            showBattle();
-        } else {
-            showEnding();
-        }
-        return;
-    }
-    
-    const storyPart = segmentData[currentStoryIndex];
-    const storyText = document.getElementById('story-text');
-    const choicesContainer = document.getElementById('choices-container');
-    
-    // Очистить
-    storyText.innerHTML = '';
-    choicesContainer.innerHTML = '';
-    choicesContainer.classList.add('hidden');
-    
-    // Обновить имя персонажа
-    const charName = document.querySelector('.character-name');
-    charName.textContent = `● ${storyPart.character.toUpperCase()}`;
-    
-    // Напечатать текст
-    isTyping = true;
-    typeText(storyText, storyPart.text, typeSpeed, () => {
-        isTyping = false;
+        modal.style.display = 'none';
         
-        // Показать выборы если есть
-        if (storyPart.choices && storyPart.choices.length > 0) {
-            showChoices(storyPart.choices, segment);
-        } else if (storyPart.autoContinue) {
-            // Автоматическое продолжение
-            setTimeout(() => {
-                currentStoryIndex++;
-                showStorySegment(segment);
-            }, storyPart.delay);
-        }
-    });
+        // Перейти к первой главе
+        turnPage('chapter1');
+        
+        // Обновить имя в истории (если нужно)
+        updatePlayerNameInStory();
+    }, 300);
 }
 
-function showChoices(choices, segment) {
-    const choicesContainer = document.getElementById('choices-container');
-    choicesContainer.innerHTML = '';
+function turnPage(pageId) {
+    // Скрыть текущую страницу
+    document.getElementById(`screen-${currentPage}`).classList.remove('active');
     
+    // Показать новую страницу
+    document.getElementById(`screen-${pageId}`).classList.add('active');
+    
+    // Эффект перелистывания
+    const newPage = document.getElementById(`screen-${pageId}`);
+    newPage.style.opacity = '0';
+    newPage.style.transform = 'translateX(50px)';
+    
+    setTimeout(() => {
+        newPage.style.transition = 'all 0.5s ease';
+        newPage.style.opacity = '1';
+        newPage.style.transform = 'translateX(0)';
+    }, 50);
+    
+    currentPage = pageId;
+    
+    // Особые действия для страниц
+    switch(pageId) {
+        case 'chapter1':
+            startChapter1();
+            break;
+        case 'chapter2':
+            startChapter2();
+            break;
+        case 'chapter3':
+            startChapter3();
+            break;
+        case 'ending':
+            showEnding();
+            break;
+    }
+    
+    // Звук перелистывания страницы
+    playPageSound();
+}
+
+function startChapter1() {
+    // Анимация появления текста
+    const textPanels = document.querySelectorAll('#screen-chapter1 .dialogue-bubble');
+    textPanels.forEach((panel, index) => {
+        panel.style.opacity = '0';
+        panel.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            panel.style.transition = 'all 0.5s ease';
+            panel.style.opacity = '1';
+            panel.style.transform = 'translateY(0)';
+        }, 300 * (index + 1));
+    });
+    
+    // Анимация силуэта монстра
+    const monster = document.querySelector('.monster-silhouette');
+    if (monster) {
+        setTimeout(() => {
+            monster.style.boxShadow = '0 0 20px var(--manga-purple)';
+            monster.style.transform = 'scale(1.05)';
+            
+            setTimeout(() => {
+                monster.style.boxShadow = 'none';
+                monster.style.transform = 'scale(1)';
+            }, 500);
+        }, 1000);
+    }
+}
+
+function startChapter2() {
+    // Анимация появления Аинза
+    const ainzSprite = document.querySelector('.char-sprite.ainz');
+    if (ainzSprite) {
+        ainzSprite.style.opacity = '0';
+        ainzSprite.style.transform = 'scale(0)';
+        
+        setTimeout(() => {
+            ainzSprite.style.transition = 'all 0.8s ease';
+            ainzSprite.style.opacity = '1';
+            ainzSprite.style.transform = 'scale(1)';
+        }, 500);
+    }
+    
+    // Анимация выбора
+    const choices = document.querySelectorAll('#screen-chapter2 .choice-btn');
     choices.forEach((choice, index) => {
-        const button = document.createElement('button');
-        button.className = 'choice-option';
-        button.textContent = choice;
+        choice.style.opacity = '0';
+        choice.style.transform = 'translateX(-50px)';
         
-        button.addEventListener('click', () => {
-            if (isTyping) return;
-            
-            player.choices.push(choice);
-            playSound('sfx-type');
-            
-            // Определить следующую часть истории
-            let nextSegment = getNextSegment(segment, index);
-            currentStoryIndex = 0;
-            showStorySegment(nextSegment);
-        });
-        
-        choicesContainer.appendChild(button);
+        setTimeout(() => {
+            choice.style.transition = 'all 0.5s ease';
+            choice.style.opacity = '1';
+            choice.style.transform = 'translateX(0)';
+        }, 300 * (index + 1));
     });
-    
-    choicesContainer.classList.remove('hidden');
 }
 
-function getNextSegment(currentSegment, choiceIndex) {
-    switch(currentSegment) {
-        case 'invasion':
-            if (choiceIndex === 0) return 'response_who';
-            if (choiceIndex === 1) return 'response_what';
-            return 'battle';
-        case 'response_who':
-        case 'response_what':
-            return 'battle';
-        case 'battle':
-            // Определить концовку по выбору
-            if (choiceIndex === 0) player.ending = 'memory';
-            else if (choiceIndex === 1) player.ending = 'willpower';
-            else player.ending = 'negotiate';
-            return 'end';
-        default:
-            return 'end';
+function makeChoice(choice) {
+    player.choices.push(choice);
+    
+    // Эффект выбора
+    const button = event.target.closest('.choice-btn');
+    if (button) {
+        button.style.background = 'var(--manga-blue)';
+        button.style.color = 'white';
+        button.style.borderColor = 'var(--manga-blue)';
+        
+        // Звук выбора
+        playChoiceSound();
+        
+        // Переход к битве через 1 секунду
+        setTimeout(() => {
+            turnPage('chapter3');
+        }, 1000);
     }
 }
 
-function showBattle() {
-    // Показать боевой интерфейс
-    document.querySelector('.battle-ui').classList.remove('hidden');
+function startChapter3() {
+    // Обновить статистику битвы
+    updateBattleStats();
     
-    // Анимация HP баров
-    const playerHP = document.querySelector('.player .hp-fill');
-    const enemyHP = document.querySelector('.enemy .hp-fill');
+    // Анимация появления боевого интерфейса
+    const battleElements = document.querySelectorAll('.battle-scene > *');
+    battleElements.forEach((element, index) => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            element.style.transition = 'all 0.5s ease';
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, 200 * (index + 1));
+    });
     
-    let playerHpValue = 100;
-    let enemyHpValue = 100;
+    // Автоматическое добавление логов битвы
+    addBattleLog();
+}
+
+function updateBattleStats() {
+    // Обновить HP/MP бары
+    const playerHp = document.querySelector('.player .hp-fill');
+    const playerMp = document.querySelector('.player .mp-fill');
+    const enemyHp = document.querySelector('.enemy .hp-fill');
     
-    // Боевая анимация
-    const battleInterval = setInterval(() => {
-        playerHpValue -= Math.random() * 10;
-        enemyHpValue -= Math.random() * 15;
-        
-        playerHP.style.width = `${Math.max(0, playerHpValue)}%`;
-        enemyHP.style.width = `${Math.max(0, enemyHpValue)}%`;
-        
-        document.querySelector('.player .hp-value').textContent = 
-            `${Math.max(0, Math.round(playerHpValue))}/100`;
-        document.querySelector('.enemy .hp-value').textContent = 
-            `${Math.max(0, Math.round(enemyHpValue))}/???`;
-        
-        if (enemyHpValue <= 0) {
-            clearInterval(battleInterval);
+    if (playerHp) playerHp.style.width = `${gameState.battleHp}%`;
+    if (playerMp) playerMp.style.width = `${gameState.battleMp}%`;
+    if (enemyHp) enemyHp.style.width = `${gameState.enemyHp}%`;
+    
+    // Обновить текстовые значения
+    const hpText = document.querySelector('.player .hp-text');
+    const mpText = document.querySelector('.player .mp-text');
+    
+    if (hpText) hpText.textContent = `HP: ${gameState.battleHp}/100`;
+    if (mpText) mpText.textContent = `MP: ${gameState.battleMp}/50`;
+}
+
+function addBattleLog() {
+    const log = document.querySelector('.battle-log');
+    if (!log) return;
+    
+    // Очистить лог
+    log.innerHTML = '';
+    
+    // Добавить начальные записи
+    const initialLogs = [
+        { char: '[SYSTEM]:', text: 'БИТВА НАЧАЛАСЬ!', type: 'system' },
+        { char: '[404]:', text: 'お前の世界を吸収する！', type: 'enemy' },
+        { char: '[ГГ]:', text: 'Не позволю тебе!', type: 'player' }
+    ];
+    
+    initialLogs.forEach((entry, index) => {
+        setTimeout(() => {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${entry.type}`;
+            logEntry.innerHTML = `
+                <span class="log-char">${entry.char}</span>
+                <span class="log-text">${entry.text}</span>
+            `;
+            
+            // Анимация появления
+            logEntry.style.opacity = '0';
+            logEntry.style.transform = 'translateX(-20px)';
+            
+            log.appendChild(logEntry);
+            
             setTimeout(() => {
-                document.querySelector('.battle-ui').classList.add('hidden');
-                currentStoryIndex = 0;
-                showStorySegment('battle');
-            }, 1000);
-        }
-        
-        if (playerHpValue <= 0) {
-            clearInterval(battleInterval);
-            player.ending = 'defeat';
-            showEnding();
-        }
-    }, 500);
+                logEntry.style.transition = 'all 0.3s ease';
+                logEntry.style.opacity = '1';
+                logEntry.style.transform = 'translateX(0)';
+                
+                // Прокрутка вниз
+                log.scrollTop = log.scrollHeight;
+            }, 50);
+        }, 500 * index);
+    });
+}
+
+function performBattleAction(action) {
+    const button = event.target.closest('.action-btn');
+    if (!button) return;
     
-    // Звук битвы
-    playSound('sfx-battle');
+    // Эффект нажатия
+    button.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        button.style.transform = '';
+    }, 150);
+    
+    // Звук действия
+    playBattleSound();
+    
+    // Логика действий
+    const log = document.querySelector('.battle-log');
+    let playerAction = '';
+    let enemyDamage = 0;
+    let playerDamage = 0;
+    let mpCost = 0;
+    
+    switch(action) {
+        case 'attack':
+            playerAction = '⚔️ Атака мечом!';
+            enemyDamage = Math.floor(Math.random() * 15) + 10;
+            playerDamage = Math.floor(Math.random() * 5) + 5;
+            break;
+            
+        case 'defend':
+            playerAction = '🛡️ Оборонительная стойка!';
+            enemyDamage = Math.floor(Math.random() * 5);
+            playerDamage = Math.floor(Math.random() * 3);
+            mpCost = 5;
+            break;
+            
+        case 'skill':
+            playerAction = '✨ Вспышка магии!';
+            enemyDamage = Math.floor(Math.random() * 20) + 15;
+            playerDamage = Math.floor(Math.random() * 8) + 5;
+            mpCost = 15;
+            break;
+            
+        case 'item':
+            playerAction = '💊 Использовано зелье лечения!';
+            enemyDamage = 0;
+            playerDamage = -20; // лечение
+            mpCost = 0;
+            break;
+    }
+    
+    // Обновить MP
+    if (mpCost > 0) {
+        gameState.battleMp = Math.max(0, gameState.battleMp - mpCost);
+    }
+    
+    // Применить лечение
+    if (playerDamage < 0) {
+        gameState.battleHp = Math.min(100, gameState.battleHp - playerDamage);
+    } else {
+        gameState.battleHp = Math.max(0, gameState.battleHp - playerDamage);
+    }
+    
+    // Урон врагу
+    gameState.enemyHp = Math.max(0, gameState.enemyHp - enemyDamage);
+    
+    // Добавить лог действий
+    addLogEntry('[ГГ]:', playerAction, 'player');
+    
+    setTimeout(() => {
+        // Ответ врага
+        const enemyActions = [
+            '空間切断！',
+            '闇の波動！',
+            '現実歪曲！',
+            '魂吸収！'
+        ];
+        const enemyAction = enemyActions[Math.floor(Math.random() * enemyActions.length)];
+        
+        addLogEntry('[404]:', enemyAction, 'enemy');
+        
+        // Обновить статистику
+        updateBattleStats();
+        
+        // Проверить конец битвы
+        setTimeout(checkBattleEnd, 500);
+    }, 500);
+}
+
+function addLogEntry(character, text, type) {
+    const log = document.querySelector('.battle-log');
+    if (!log) return;
+    
+    const logEntry = document.createElement('div');
+    logEntry.className = `log-entry ${type}`;
+    logEntry.innerHTML = `
+        <span class="log-char">${character}</span>
+        <span class="log-text">${text}</span>
+    `;
+    
+    // Анимация появления
+    logEntry.style.opacity = '0';
+    logEntry.style.transform = 'translateX(-20px)';
+    
+    log.appendChild(logEntry);
+    
+    setTimeout(() => {
+        logEntry.style.transition = 'all 0.3s ease';
+        logEntry.style.opacity = '1';
+        logEntry.style.transform = 'translateX(0)';
+        
+        // Прокрутка вниз
+        log.scrollTop = log.scrollHeight;
+    }, 50);
+}
+
+function checkBattleEnd() {
+    if (gameState.enemyHp <= 0) {
+        // Победа
+        addLogEntry('[SYSTEM]:', 'СУЩНОСТЬ-404 ПОБЕЖДЕНА!', 'system');
+        player.ending = 'victory';
+        
+        // Переход к концовке через 2 секунды
+        setTimeout(() => {
+            turnPage('ending');
+        }, 2000);
+        
+    } else if (gameState.battleHp <= 0) {
+        // Поражение
+        addLogEntry('[SYSTEM]:', 'ГГ ПОВЕРЖЕН...', 'system');
+        player.ending = 'defeat';
+        
+        setTimeout(() => {
+            turnPage('ending');
+        }, 2000);
+    }
 }
 
 function showEnding() {
-    showScreen('screen-ending');
-    
-    const endingData = story.endings[player.ending] || {
-        title: "НЕИЗВЕСТНЫЙ ИСХОД",
-        text: "Твоя история обрывается здесь. Возможно, в другой реальности...",
-        allies: ["???"],
-        rank: "?"
-    };
-    
-    const endingText = document.getElementById('ending-text');
-    const allyCount = document.getElementById('ally-count');
-    const playerRank = document.getElementById('player-rank');
-    const creditName = document.getElementById('credit-name');
-    
-    // Показать текст концовки
-    typeText(endingText, 
-        `<strong>${endingData.title}</strong><br><br>${endingData.text}<br><br>
-        Ты преодолел Марш Смерти и нашел свой путь в параллельном мире. 
-        Твоё путешествие только начинается...`, 
-        typeSpeed);
+    // Определить тип концовки
+    let endingType = 'victory';
+    if (player.ending === 'defeat') {
+        endingType = 'defeat';
+    } else if (player.choices.includes('escape')) {
+        endingType = 'escape';
+    }
     
     // Обновить статистику
-    allyCount.textContent = endingData.allies.length;
-    playerRank.textContent = endingData.rank;
-    creditName.textContent = player.name;
+    document.getElementById('choices-count').textContent = player.choices.length;
+    document.getElementById('allies-count').textContent = player.allies.length;
     
-    // Показать список союзников
+    // Обновить текст концовки
+    const endingText = document.getElementById('ending-text');
+    const endingTitle = document.getElementById('ending-title');
+    const playerRole = document.getElementById('player-role');
+    
+    let title = '';
+    let text = '';
+    let role = '';
+    
+    switch(endingType) {
+        case 'victory':
+            title = 'ПОБЕДИТЕЛЬ МИРОВ';
+            role = 'Повелитель Назарика';
+            text = `Вы победили Сущность-404 и спасли параллельный мир. ${player.name} стал легендой среди монстров и героев. Ваше имя теперь известно во всех измерениях.`;
+            break;
+            
+        case 'defeat':
+            title = 'ПАВШИЙ ГЕРОЙ';
+            role = 'Забытый воин';
+            text = `Вы пали в битве с Сущностью-404. Но ваша жертва не была напрасной - Аинз смог завершить ритуал изгнания. ${player.name} останется в памяти мира как герой, пожертвовавший собой.`;
+            break;
+            
+        case 'escape':
+            title = 'БЕГЛЕЦ РЕАЛЬНОСТИ';
+            role = 'Скиталец миров';
+            text = `Вы сбежали от битвы, но не от своей судьбы. ${player.name} теперь вечный путешественник между мирами, нигде не находящий покоя. Возможно, однажды вы вернётесь...`;
+            break;
+            
+        default:
+            title = 'ПУТЕШЕСТВЕННИК МИРОВ';
+            role = 'Хранитель Врат';
+            text = `Ваше путешествие подошло к концу. Вы преодолели Смертельный Марш и нашли своё место в параллельном мире. Как ${role}, вы теперь связующее звено между мирами.`;
+    }
+    
+    if (endingTitle) endingTitle.textContent = title;
+    if (playerRole) playerRole.textContent = role;
+    if (endingText) endingText.innerHTML = text;
+    
+    // Анимация появления
+    const endingContent = document.querySelector('.ending-content');
+    if (endingContent) {
+        endingContent.style.opacity = '0';
+        endingContent.style.transform = 'translateY(50px)';
+        
+        setTimeout(() => {
+            endingContent.style.transition = 'all 1s ease';
+            endingContent.style.opacity = '1';
+            endingContent.style.transform = 'translateY(0)';
+        }, 300);
+    }
+}
+
+function restartGame() {
+    // Плавный переход к началу
+    document.getElementById('screen-ending').classList.remove('active');
+    document.getElementById('screen-ending').style.opacity = '0';
+    
     setTimeout(() => {
-        endingText.innerHTML += `<br><br><strong>СОЮЗНИКИ:</strong><br>`;
-        endingData.allies.forEach(ally => {
-            endingText.innerHTML += `● ${ally}<br>`;
-        });
-    }, 3000);
-    
-    // Запустить победную музыку
-    playSound('sfx-victory');
+        initGame();
+    }, 500);
+}
+
+function updatePlayerNameInStory() {
+    // Обновить имя ГГ в тексте (если есть такие места)
+    const ggElements = document.querySelectorAll('[data-gg-name]');
+    ggElements.forEach(el => {
+        el.textContent = player.name;
+    });
 }
 
 // Вспомогательные функции
@@ -542,122 +601,42 @@ function showScreen(screenId) {
         screen.classList.remove('active');
     });
     document.getElementById(screenId).classList.add('active');
-    currentScreen = screenId;
 }
 
-function typeText(element, text, speed, callback) {
-    isTyping = true;
-    element.innerHTML = '';
-    let i = 0;
-    
-    const typeInterval = setInterval(() => {
-        if (i < text.length) {
-            element.innerHTML += text.charAt(i);
-            i++;
-            // Звук печати
-            if (i % 3 === 0) playSound('sfx-type', 0.1);
-        } else {
-            clearInterval(typeInterval);
-            isTyping = false;
-            if (callback) callback();
-        }
-    }, speed);
-}
-
-function playSound(soundId, volume = 1) {
-    const sound = document.getElementById(soundId);
-    if (sound) {
-        sound.currentTime = 0;
-        sound.volume = volume;
-        sound.play().catch(e => console.log("Sound play blocked"));
+function playPageSound() {
+    // Имитация звука перелистывания
+    const audio = document.getElementById('sfx-page');
+    if (audio) {
+        audio.currentTime = 0;
+        // audio.play(); // Раскомментировать когда добавите звук
     }
 }
 
-function getRandomColor() {
-    const colors = ['#ff00ff', '#00ffff', '#ffff00', '#ff0000', '#00ff00'];
-    return colors[Math.floor(Math.random() * colors.length)];
-}
-
-function continueStory() {
-    if (isTyping) {
-        // Пропустить печатание
-        const storyText = document.getElementById('story-text');
-        storyText.style.animation = 'none';
-        isTyping = false;
-        return;
-    }
-    
-    currentStoryIndex++;
-    
-    // Определить текущий сегмент
-    let currentSegment = 'invasion';
-    if (player.choices.length > 0) {
-        currentSegment = getCurrentSegment();
-    }
-    
-    showStorySegment(currentSegment);
-}
-
-function getCurrentSegment() {
-    // Простая логика определения текущего сегмента
-    if (player.choices.some(c => c.includes('Кто ты') || c.includes('Что происходит'))) {
-        return player.choices.length > 1 ? 'battle' : 'response_who';
-    }
-    return 'invasion';
-}
-
-function toggleAuto() {
-    // Режим авто-чтения (упрощенная версия)
-    const autoBtn = document.getElementById('auto-btn');
-    autoBtn.classList.toggle('active');
-    
-    if (autoBtn.classList.contains('active')) {
-        // Запустить авто-чтение
-        startAutoMode();
+function playChoiceSound() {
+    const audio = document.getElementById('sfx-choice');
+    if (audio) {
+        audio.currentTime = 0;
+        // audio.play();
     }
 }
 
-function startAutoMode() {
-    if (!isTyping && currentScreen === 'screen-story') {
-        setTimeout(() => {
-            if (document.getElementById('auto-btn').classList.contains('active')) {
-                continueStory();
-                startAutoMode();
-            }
-        }, 3000);
+function playBattleSound() {
+    const audio = document.getElementById('sfx-battle');
+    if (audio) {
+        audio.currentTime = 0;
+        // audio.play();
     }
 }
 
-function skipDialogue() {
-    // Перейти сразу к концовке (для тестирования)
-    player.ending = 'memory';
-    showEnding();
-}
-
-function newGame() {
-    // Сброс игры
-    player = {
-        name: '',
-        hp: 100,
-        mp: 50,
-        level: 1,
-        allies: [],
-        choices: [],
-        world: 'void',
-        ending: ''
-    };
-    
-    // Сбросить все экраны
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-        screen.style.opacity = '1';
-    });
-    
-    // Сбросить видео
-    document.getElementById('void-monster').currentTime = 0;
-    
-    // Начать сначала
-    setTimeout(() => {
-        initGame();
-    }, 500);
+// Анимация для обложки
+function animateCover() {
+    const title = document.querySelector('.title-main');
+    if (title) {
+        setInterval(() => {
+            title.style.textShadow = 
+                title.style.textShadow.includes('5px') 
+                    ? '3px 3px 0 var(--manga-black), 6px 6px 0 rgba(0, 0, 0, 0.2)'
+                    : '5px 5px 0 var(--manga-black), 10px 10px 0 rgba(0, 0, 0, 0.2)';
+        }, 1000);
+    }
 }
