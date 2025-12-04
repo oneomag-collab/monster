@@ -1,233 +1,249 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* Добавьте эти стили в конец файла style.css */
 
-body {
-    font-family: 'Cinzel', serif;
-    background-color: #000;
-    color: #c33333;
-    overflow: hidden;
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-}
-
-.phase {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-.phase.active {
-    display: flex;
-}
-
-/* Стили для фазы ошибки 404 */
-#phase-error {
-    background-color: #000;
-}
-
-.error-container {
-    text-align: center;
-}
-
-#error-404 {
-    max-width: 90vw;
-    max-height: 50vh;
-    filter: brightness(0.8);
-}
-
-/* Стили для страшной фазы */
-#phase-horror {
-    background-color: #000;
+/* Фаза истории */
+#phase-story {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     opacity: 0;
     transition: opacity 2s ease;
 }
 
-.monster-media {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* Кровавая табличка */
-#blood-plate {
+#story-container {
     position: relative;
-    background-color: #3a0000;
-    border: 8px solid #5a0000;
+    z-index: 100;
+    max-width: 800px;
+    width: 90%;
+    background: rgba(0, 0, 0, 0.85);
+    border: 3px solid #8b0000;
     border-radius: 15px;
-    padding: 40px 60px;
+    padding: 30px;
+    box-shadow: 0 0 40px rgba(139, 0, 0, 0.5),
+                inset 0 0 20px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+#story-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 2.5vw, 26px);
+    color: #e8e8e8;
+    line-height: 1.6;
     text-align: center;
-    box-shadow: 0 0 50px rgba(139, 0, 0, 0.7),
-                inset 0 0 30px rgba(0, 0, 0, 0.5);
-    z-index: 10;
-    min-width: 300px;
-    max-width: 90vw;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    animation: textAppear 0.8s ease forwards;
 }
 
-.blood-texture {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('../media/blood-texture.png');
-    background-size: cover;
-    mix-blend-mode: multiply;
-    opacity: 0.7;
-    border-radius: 7px;
+@keyframes textAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.blood-content {
-    position: relative;
-    z-index: 2;
+/* Контейнер выборов */
+#choices-container {
+    margin-top: 40px;
+    display: grid;
+    gap: 15px;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.5s forwards;
 }
 
-#blood-plate h2 {
-    font-size: clamp(24px, 5vw, 36px);
-    color: #ffcccc;
-    text-shadow: 0 0 10px #ff0000,
-                 0 0 20px #cc0000;
-    margin-bottom: 30px;
-    letter-spacing: 3px;
-}
-
-#name-input {
-    font-family: 'Caveat', cursive;
-    font-size: 28px;
-    background: rgba(20, 0, 0, 0.8);
-    color: #ff9999;
-    border: 2px solid #800000;
-    border-radius: 5px;
-    padding: 10px 20px;
-    width: 100%;
-    text-align: center;
-    outline: none;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-}
-
-#name-input::placeholder {
-    color: #993333;
-}
-
-#submit-name {
-    margin-top: 20px;
-    padding: 10px 30px;
+.choice-btn {
     font-family: 'Cinzel', serif;
-    font-size: 20px;
-    background: linear-gradient(to bottom, #660000, #330000);
-    color: #ffcccc;
-    border: 2px solid #990000;
-    border-radius: 5px;
+    font-size: clamp(16px, 1.8vw, 20px);
+    background: linear-gradient(145deg, #2d0b0b, #1a0505);
+    color: #ffcccb;
+    border: 2px solid #8b0000;
+    border-radius: 8px;
+    padding: 18px 25px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    letter-spacing: 1px;
 }
 
-#submit-name:hover {
-    background: linear-gradient(to bottom, #880000, #440000);
-    box-shadow: 0 0 20px #ff0000;
+.choice-btn:hover {
+    background: linear-gradient(145deg, #3d0f0f, #2a0808);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(139, 0, 0, 0.4);
+    border-color: #ff0000;
 }
 
-/* Капли крови сверху */
+.choice-btn:active {
+    transform: translateY(0);
+}
+
+/* Кнопка продолжения */
+#story-continue {
+    margin-top: 40px;
+    text-align: center;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.5s forwards;
+}
+
+#continue-btn {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(18px, 2vw, 22px);
+    background: linear-gradient(145deg, #0b2d1a, #051a0f);
+    color: #a3ffcb;
+    border: 2px solid #008b3d;
+    border-radius: 8px;
+    padding: 15px 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+}
+
+#continue-btn:hover {
+    background: linear-gradient(145deg, #0f3d1f, #082a14);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(0, 139, 61, 0.4);
+}
+
+/* Контейнер концовок */
+#endings-container {
+    position: relative;
+    z-index: 100;
+    max-width: 800px;
+    width: 90%;
+    background: rgba(10, 10, 30, 0.95);
+    border: 3px solid #4a0080;
+    border-radius: 15px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(74, 0, 128, 0.6);
+}
+
+#ending-content {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(22px, 2.8vw, 28px);
+    color: #e6e6ff;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: textAppear 1s ease forwards;
+}
+
+#restart-btn {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(18px, 2vw, 22px);
+    background: linear-gradient(145deg, #2d2d0b, #1a1a05);
+    color: #ffffcb;
+    border: 2px solid #8b8b00;
+    border-radius: 8px;
+    padding: 15px 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+}
+
+#restart-btn:hover {
+    background: linear-gradient(145deg, #3d3d0f, #2a2a08);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(139, 139, 0, 0.4);
+}
+
+/* Анимации текста */
+.text-typing {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid #8b0000;
+    animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: #8b0000 }
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    #story-container, #endings-container {
+        padding: 20px 15px;
+        width: 95%;
+    }
+    
+    #choices-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .choice-btn, #continue-btn, #restart-btn {
+        padding: 15px 20px;
+    }
+    
+    #story-text {
+        min-height: 150px;
+        font-size: 18px;
+    }
+}
+
+/* Улучшение эффекта капель */
 .blood-drip {
     position: absolute;
-    top: -50px;
-    left: 50%;
-    width: 5px;
-    height: 50px;
+    top: -30px;
+    width: 3px;
+    height: 30px;
     background: linear-gradient(to bottom, 
                 transparent 0%, 
-                #ff0000 30%, 
-                #990000 70%, 
+                #ff0000 20%, 
+                #990000 60%, 
+                #660000 90%, 
                 transparent 100%);
-    animation: drip 2s infinite;
+    animation: drip-fall 3s infinite;
     filter: blur(1px);
+    z-index: 1;
 }
 
-@keyframes drip {
+#drip1 { left: 20%; animation-delay: 0s; }
+#drip2 { left: 50%; animation-delay: 1.5s; }
+#drip3 { left: 80%; animation-delay: 2.5s; }
+
+@keyframes drip-fall {
     0% { transform: translateY(0); opacity: 0; }
     10% { opacity: 1; }
-    90% { opacity: 1; }
+    90% { opacity: 0.8; }
     100% { transform: translateY(100vh); opacity: 0; }
 }
 
-.blood-drip::before,
-.blood-drip::after {
-    content: '';
-    position: absolute;
-    width: 8px;
-    height: 15px;
-    background: #990000;
-    border-radius: 50%;
-    top: 100%;
-    filter: blur(3px);
+/* Стиль для букв в названии */
+.blood-letter {
+    color: #ff4444;
+    text-shadow: 0 0 15px #ff0000;
+    animation: blood-pulse 2s infinite;
 }
 
-.blood-drip::before { left: -10px; }
-.blood-drip::after { left: 7px; }
-
-/* Фаза с добрым монстром */
-#phase-good {
-    background-color: #fff;
-    opacity: 0;
-    transition: opacity 2s ease;
-}
-
-#text-messages {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    z-index: 20;
-}
-
-.message {
-    font-family: 'Caveat', cursive;
-    font-size: clamp(30px, 6vw, 48px);
-    color: #000;
-    opacity: 0;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    margin: 20px 0;
-}
-
-/* Анимации */
-@keyframes blink {
+@keyframes blood-pulse {
     0%, 100% { opacity: 1; }
-    10%, 30%, 50%, 70%, 90% { opacity: 1; }
-    20%, 40%, 60%, 80% { opacity: 0.2; }
+    50% { opacity: 0.7; }
 }
 
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-@keyframes scatter {
-    0% { 
-        opacity: 1;
-        transform: translateY(0) rotate(0);
-    }
-    100% { 
-        opacity: 0;
-        transform: translateY(100vh) rotate(360deg);
-        letter-spacing: 50px;
-    }
+/* Общие анимации */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .hidden {
     display: none !important;
+}
+
+.visible {
+    display: block !important;
 }
