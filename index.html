@@ -3,216 +3,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Марш Смерти: Параллельный Мир</title>
+    <title>マンガ: Смертельный Марш в Параллельный Мир</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yomogi&family=DotGothic16&family=M+PLUS+Rounded+1c:wght@400;700&family=New+Tegomin&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Yomogi&family=M+PLUS+Rounded+1c:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&display=swap">
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <style>
+        /* Экранные эффекты */
+        .screen-flicker {
+            animation: flicker 0.3s infinite;
+        }
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Экран 1: Ошибка 404 -->
-    <div id="screen-404" class="screen active">
-        <div class="glitch-container">
-            <div class="glitch-text" data-text="システムエラー">システムエラー</div>
-            <div class="error-code">
-                <span class="glitching">4</span>
-                <span class="glitching">0</span>
-                <span class="glitching">4</span>
-            </div>
-            <div class="error-message">
-                <span class="jp-text">平行世界への接続が切断されました</span>
-                <br>
-                <span class="ru-text">Соединение с параллельным миром разорвано</span>
-            </div>
-            <div class="scan-line"></div>
-        </div>
-    </div>
-
-    <!-- Экран 2: Вторжение монстра -->
-    <div id="screen-monster" class="screen">
-        <div class="distortion-overlay"></div>
-        <video id="void-monster" class="monster-video" muted playsinline loop>
-            <source src="assets/void-creature.mp4" type="video/mp4">
-            <source src="assets/void-creature.webm" type="video/webm">
-        </video>
-        <div class="static-overlay"></div>
-    </div>
-
-    <!-- Экран 3: Кровавый интерфейс -->
-    <div id="screen-interface" class="screen">
-        <div class="terminal-window">
-            <div class="terminal-header">
-                <div class="terminal-buttons">
-                    <span class="terminal-btn close"></span>
-                    <span class="terminal-btn minimize"></span>
-                    <span class="terminal-btn maximize"></span>
-                </div>
-                <div class="terminal-title">SYSTEM_INTRUSION.EXE</div>
-            </div>
-            <div class="terminal-body">
-                <div class="terminal-text">
-                    <span class="prompt">root@parallel-world:~$ </span>
-                    <span class="command">scan_intruder.exe</span>
-                    <br>
-                    <span class="output">＞＞ ОБНАРУЖЕНА УГРОЗА: [СУЩНОСТЬ-404]</span>
-                    <br>
-                    <span class="output">＞＞ МЕСТОПОЛОЖЕНИЕ: ПАРАЛЛЕЛЬНЫЙ СЕКТОР [死亡行進]</span>
-                    <br>
-                    <span class="output">＞＞ ТРЕБУЕТСЯ ИДЕНТИФИКАЦИЯ...</span>
-                </div>
-                
-                <div class="input-section">
-                    <div class="blood-input">
-                        <span class="input-label">ВВЕДИТЕ КОД ДОСТУПА (ВАШЕ ИМЯ):</span>
-                        <div class="input-wrapper">
-                            <input type="text" id="access-code" placeholder="■■■■■■■■■■" maxlength="20">
-                            <div class="blood-trail"></div>
-                        </div>
-                        <button id="verify-btn" class="hack-button">
-                            <span class="btn-text">ПОДТВЕРДИТЬ</span>
-                            <span class="btn-glitch">侵入する</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="blood-drops">
-                    <div class="drop" style="left: 10%"></div>
-                    <div class="drop" style="left: 30%"></div>
-                    <div class="drop" style="left: 50%"></div>
-                    <div class="drop" style="left: 70%"></div>
-                    <div class="drop" style="left: 90%"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Экран 4: Приветствие -->
-    <div id="screen-welcome" class="screen">
-        <div class="welcome-glitch">
-            <div class="welcome-message">
-                <h1 id="player-name-display"></h1>
-                <div class="welcome-subtitle">
-                    <span class="jp">ようこそ、異世界の旅人</span>
-                    <br>
-                    <span class="ru">Добро пожаловать, путешественник иных миров</span>
-                </div>
-            </div>
-            <div class="data-stream">
-                <div class="stream-line"></div>
-                <div class="stream-line"></div>
-                <div class="stream-line"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Экран 5: История -->
-    <div id="screen-story" class="screen">
-        <div class="story-background">
-            <div class="floating-islands"></div>
-            <div class="celestial-bodies">
-                <div class="moon"></div>
-                <div class="sun"></div>
-            </div>
-        </div>
-        
-        <div class="visual-novel">
-            <div class="vn-character">
-                <div class="character-sprite" id="sprite-ainz"></div>
-                <div class="character-name">● АИНЗ ООАЛ ГОУН</div>
+    <!-- Экран 1: Начало манги (Обложка) -->
+    <div id="screen-cover" class="screen active">
+        <div class="manga-cover">
+            <div class="cover-title">
+                <h1 class="title-main">死の行進</h1>
+                <h2 class="title-sub">Parallel World Rhapsody</h2>
+                <div class="title-jp">デス・マーチ・トゥ・ザ・パラレル・ワールド</div>
             </div>
             
-            <div class="vn-textbox">
-                <div class="text-container">
-                    <div id="story-text" class="story-text"></div>
+            <div class="cover-art">
+                <div class="manga-panel large">
+                    <div class="panel-number">P.01</div>
+                    <div class="panel-content">
+                        <div class="character-404">
+                            <div class="char-eye left"></div>
+                            <div class="char-eye right"></div>
+                            <div class="char-mouth"></div>
+                        </div>
+                        <div class="panel-text">ERROR 404: WORLD NOT FOUND</div>
+                    </div>
+                    <div class="sound-effect">ゴゴゴゴ</div>
+                </div>
+            </div>
+            
+            <div class="cover-footer">
+                <div class="volume-info">VOL.1 異世界編</div>
+                <div class="author-info">原作: MONSTER-404 STUDIO</div>
+                <button id="start-reading" class="manga-button">
+                    <span class="btn-text">読む始める</span>
+                    <span class="btn-sub">START READING</span>
+                </button>
+            </div>
+            
+            <div class="page-corner"></div>
+        </div>
+    </div>
+
+    <!-- Экран 2: Глава 1 - Вторжение -->
+    <div id="screen-chapter1" class="screen">
+        <div class="manga-page">
+            <div class="page-header">
+                <div class="chapter-title">第１章: 異世界転移</div>
+                <div class="page-number">P.02</div>
+            </div>
+            
+            <div class="manga-panels">
+                <!-- Панель 1 -->
+                <div class="manga-panel">
+                    <div class="panel-content text-panel">
+                        <div class="dialogue-bubble thought">
+                            <div class="bubble-tail"></div>
+                            <div class="bubble-text">
+                                "Где я...? Всё было нормально, я просто проверял сайт..."
+                            </div>
+                        </div>
+                        <div class="panel-caption">
+                            ● ГГ открывает глаза в странном месте. Небо трескается как стекло.
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="vn-choices" id="choices-container"></div>
+                <!-- Панель 2 -->
+                <div class="manga-panel">
+                    <div class="panel-content image-panel">
+                        <div class="placeholder-image monster-silhouette">
+                            <div class="placeholder-label">[Сущность-404]</div>
+                            <div class="monster-details">
+                                <div class="detail">HP: ???</div>
+                                <div class="detail">MP: ∞</div>
+                                <div class="detail">Тип: Босс</div>
+                            </div>
+                        </div>
+                        <div class="sound-effect large">ガガガーン！</div>
+                    </div>
+                </div>
                 
-                <div class="vn-controls">
-                    <button id="auto-btn" class="control-btn">AUTO</button>
-                    <button id="skip-btn" class="control-btn">SKIP</button>
-                    <button id="next-btn" class="control-btn next-btn">▶</button>
-                    <div class="progress-bar">
-                        <div class="progress-fill"></div>
+                <!-- Панель 3 -->
+                <div class="manga-panel">
+                    <div class="panel-content text-panel">
+                        <div class="dialogue-bubble shout right">
+                            <div class="bubble-tail"></div>
+                            <div class="bubble-text">
+                                Кто ты?! Что это за место?!
+                            </div>
+                        </div>
+                        <div class="character-tag">
+                            <span class="char-name">● ГГ</span>
+                            <span class="char-status">Испуган</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="battle-ui hidden">
-            <div class="hp-bars">
-                <div class="hp-bar player">
-                    <div class="hp-label">ВАШ HP</div>
-                    <div class="hp-fill" style="width: 100%"></div>
-                    <div class="hp-value">100/100</div>
-                </div>
-                <div class="hp-bar enemy">
-                    <div class="hp-label">СУЩНОСТЬ-404</div>
-                    <div class="hp-fill" style="width: 100%"></div>
-                    <div class="hp-value">???/???</div>
-                </div>
+            
+            <div class="page-footer">
+                <button class="next-page" data-next="chapter2">次へ ▶</button>
+                <div class="page-progress">2/12</div>
             </div>
         </div>
     </div>
 
-    <!-- Экран 6: Концовка -->
+    <!-- Экран 3: Глава 2 - Встреча -->
+    <div id="screen-chapter2" class="screen">
+        <div class="manga-page">
+            <div class="page-header">
+                <div class="chapter-title">第２章: 運命の出会い</div>
+                <div class="page-number">P.03</div>
+            </div>
+            
+            <div class="manga-panels">
+                <!-- Панель 1 -->
+                <div class="manga-panel tall">
+                    <div class="panel-content text-panel">
+                        <div class="character-intro">
+                            <div class="char-sprite ainz"></div>
+                            <div class="char-info">
+                                <h3>● АИНЗ ООАЛ ГОУН</h3>
+                                <p>Повелитель Назарика<br>Уровень: 100<br>Раса: Нежить</p>
+                            </div>
+                        </div>
+                        <div class="dialogue-bubble calm">
+                            <div class="bubble-tail"></div>
+                            <div class="bubble-text">
+                                Так ты и есть тот, кто проник сквозь барьер миров? Интересно...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Панель 2 -->
+                <div class="manga-panel">
+                    <div class="panel-content choice-panel">
+                        <div class="choice-title">Выбор героя:</div>
+                        <div class="choices">
+                            <button class="choice-btn" data-choice="attack">
+                                <span class="choice-num">1.</span>
+                                <span class="choice-text">Атаковать! Я должен защищаться!</span>
+                            </button>
+                            <button class="choice-btn" data-choice="question">
+                                <span class="choice-num">2.</span>
+                                <span class="choice-text">Спросить объяснений</span>
+                            </button>
+                            <button class="choice-btn" data-choice="escape">
+                                <span class="choice-num">3.</span>
+                                <span class="choice-text">Попытаться сбежать</span>
+                            </button>
+                        </div>
+                        <div class="choice-hint">Выбор определит развитие сюжета</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="page-footer">
+                <button class="prev-page" data-prev="chapter1">◀ 前へ</button>
+                <button class="next-page" data-next="chapter3">次へ ▶</button>
+                <div class="page-progress">3/12</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран 4: Глава 3 - Битва -->
+    <div id="screen-chapter3" class="screen">
+        <div class="manga-page battle">
+            <div class="page-header">
+                <div class="chapter-title">第３章: 決戦</div>
+                <div class="page-number">P.04</div>
+            </div>
+            
+            <div class="battle-scene">
+                <div class="battle-stats">
+                    <div class="stat player">
+                        <div class="stat-label">ГГ</div>
+                        <div class="hp-bar">
+                            <div class="hp-fill" style="width: 85%"></div>
+                            <div class="hp-text">HP: 85/100</div>
+                        </div>
+                        <div class="mp-bar">
+                            <div class="mp-fill" style="width: 60%"></div>
+                            <div class="mp-text">MP: 30/50</div>
+                        </div>
+                    </div>
+                    
+                    <div class="vs-sign">VS</div>
+                    
+                    <div class="stat enemy">
+                        <div class="stat-label">Сущность-404</div>
+                        <div class="hp-bar">
+                            <div class="hp-fill" style="width: 70%"></div>
+                            <div class="hp-text">HP: ???/???</div>
+                        </div>
+                        <div class="skill">Умение: [Поглощение Реальности]</div>
+                    </div>
+                </div>
+                
+                <div class="battle-log">
+                    <div class="log-entry enemy">
+                        <span class="log-char">[404]:</span>
+                        <span class="log-text">空間を歪める！ (Искажаю пространство!)</span>
+                    </div>
+                    <div class="log-entry player">
+                        <span class="log-char">[ГГ]:</span>
+                        <span class="log-text">Щит воспоминаний! Защити меня!</span>
+                    </div>
+                    <div class="log-entry system">
+                        <span class="log-char">[SYSTEM]:</span>
+                        <span class="log-text">СИЛА ВОСПОМИНАНИЙ активирована! Защита +50%</span>
+                    </div>
+                </div>
+                
+                <div class="battle-actions">
+                    <div class="action-title">Выберите действие:</div>
+                    <div class="actions">
+                        <button class="action-btn" data-action="attack">⚔️ Атаковать</button>
+                        <button class="action-btn" data-action="defend">🛡️ Защищаться</button>
+                        <button class="action-btn" data-action="skill">✨ Исп. навык</button>
+                        <button class="action-btn" data-action="item">💊 Предмет</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="page-footer">
+                <button class="prev-page" data-prev="chapter2">◀ 前へ</button>
+                <button class="next-page" data-next="ending">次へ ▶</button>
+                <div class="page-progress">4/12</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран 5: Концовка -->
     <div id="screen-ending" class="screen">
-        <div class="ending-scene">
-            <div class="episode-title">
-                <div class="ep-num">EPISODE 13</div>
-                <div class="ep-name">DEATH MARCH TO THE PARALLEL WORLD</div>
+        <div class="manga-page ending">
+            <div class="page-header">
+                <div class="chapter-title">最終章: 新たな世界</div>
+                <div class="page-number">P.12</div>
             </div>
             
             <div class="ending-content">
-                <div id="ending-text"></div>
-                <div class="ending-stats">
-                    <div class="stat">
-                        <span class="stat-label">МИРОВ ПРОЙДЕНО:</span>
-                        <span class="stat-value">7</span>
+                <div class="ending-title" id="ending-title">Путешественник Миров</div>
+                
+                <div class="ending-panel">
+                    <div class="ending-text" id="ending-text">
+                        Ваше путешествие подошло к концу. Вы преодолели Смертельный Марш и нашли своё место в параллельном мире. 
+                        Как <span class="highlight" id="player-role">Хранитель Врат</span>, вы теперь связующее звено между мирами.
                     </div>
-                    <div class="stat">
-                        <span class="stat-label">СОЮЗНИКОВ:</span>
-                        <span class="stat-value" id="ally-count">3</span>
+                    
+                    <div class="ending-stats">
+                        <div class="stat-block">
+                            <h4>Статистика:</h4>
+                            <div class="stats">
+                                <div class="stat-item">
+                                    <span class="stat-name">Пройдено глав:</span>
+                                    <span class="stat-value">4</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-name">Выборов сделано:</span>
+                                    <span class="stat-value" id="choices-count">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-name">Союзников:</span>
+                                    <span class="stat-value" id="allies-count">3</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-name">Финальный ранг:</span>
+                                    <span class="stat-value rank-S">S</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat">
-                        <span class="stat-label">КОНЕЧНЫЙ РАНГ:</span>
-                        <span class="stat-value" id="player-rank">S</span>
+                    
+                    <div class="character-gallery">
+                        <h4>Встреченные персонажи:</h4>
+                        <div class="gallery">
+                            <div class="char-card">
+                                <div class="char-img ainz-small"></div>
+                                <div class="char-desc">Аинз<br>Повелитель</div>
+                            </div>
+                            <div class="char-card">
+                                <div class="char-img albedo-small"></div>
+                                <div class="char-desc">Альбедо<br>Стратег</div>
+                            </div>
+                            <div class="char-card">
+                                <div class="char-img shaltear-small"></div>
+                                <div class="char-desc">Шалтир<br>Вампир</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="ending-credits">
-                    <div class="credit-title">СОЗДАТЕЛИ:</div>
-                    <div class="credit-names">
-                        ● Сценарий: [МОНСТР-404]<br>
-                        ● Режиссёр: [ПАРАЛЛЕЛЬНАЯ РЕАЛЬНОСТЬ]<br>
-                        ● Главный герой: <span id="credit-name"></span><br>
-                        ● Спецэффекты: [ИСКАЖЕНИЕ ПРОСТРАНСТВА]
+                <div class="credits">
+                    <div class="credit-title">制作スタッフ</div>
+                    <div class="credit-list">
+                        <div class="credit-item">原作・脚本: MONSTER-404</div>
+                        <div class="credit-item">キャラクターデザイン: 異世界チーム</div>
+                        <div class="credit-item">ウェブ実装: ワンオマガ協力</div>
+                        <div class="credit-item">特別感謝: あなた (読者)</div>
                     </div>
                 </div>
             </div>
             
-            <button id="new-game-btn" class="ng-button">
-                <span>NEW GAME+</span>
-                <div class="ng-sub">別の世界線へ</div>
-            </button>
+            <div class="page-footer">
+                <button id="restart-btn" class="manga-button large">
+                    <span class="btn-text">もう一度読む</span>
+                    <span class="btn-sub">READ AGAIN</span>
+                </button>
+                <div class="series-notice">
+                    続編: 「死の行進 II - 竜の王国」準備中...
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Аудио -->
-    <audio id="bgm-main" loop>
-        <source src="assets/bgm-main.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="sfx-glitch">
-        <source src="assets/glitch.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="sfx-type">
-        <source src="assets/typewriter.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="sfx-battle">
-        <source src="assets/battle.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="sfx-victory">
-        <source src="assets/victory.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Имя игрока -->
+    <div id="name-modal" class="modal">
+        <div class="modal-content manga-style">
+            <div class="modal-header">
+                <h3>主人公の名前を入力</h3>
+                <div class="modal-sub">Введите имя главного героя</div>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="player-name" placeholder="例: カズマ / カズма" maxlength="15">
+                <div class="name-examples">
+                    Примеры: Казма, Сатоши, Юки, Тацуми
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-name" class="manga-button">
+                    <span>決定</span>
+                    <small>CONFIRM</small>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Звуковые эффекты -->
+    <audio id="sfx-page" preload="auto"></audio>
+    <audio id="sfx-choice" preload="auto"></audio>
+    <audio id="sfx-battle" preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
