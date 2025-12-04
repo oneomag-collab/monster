@@ -3,76 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тайное Братство Монстров</title>
+    <title>Монстр-404</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:wght@400;500;600&family=Eater&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Orbitron:wght@400;700;900&family=Special+Elite&display=swap">
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 </head>
 <body>
-    <!-- Фаза 1: 404 и страшный монстр -->
-    <div id="phase-error" class="phase active">
+    <!-- Начальный экран: Ошибка 404 -->
+    <div id="screen-404" class="screen active">
         <div class="error-container">
-            <div id="error-404">
-                <span class="error-code">404</span>
-                <span class="error-text">ENTITY NOT FOUND</span>
+            <div class="error-number">
+                <span class="digit">4</span>
+                <span class="digit">0</span>
+                <span class="digit">4</span>
             </div>
+            <div class="error-text">МОНСТР НЕ НАЙДЕН</div>
+            <div class="error-subtext">но он найдет тебя...</div>
         </div>
     </div>
 
-    <!-- Фаза 2: Ужас -->
-    <div id="phase-horror" class="phase">
-        <video id="monster1-video" class="monster-media" loop muted playsinline>
-            <source src="assets/videos/monster1.mp4" type="video/mp4">
-            <source src="assets/videos/monster1.webm" type="video/webm">
+    <!-- Экран монстра -->
+    <div id="screen-monster" class="screen">
+        <video id="monster-video" class="monster-video" muted playsinline>
+            <!-- Замените на ваше видео монстра -->
+            <source src="assets/monster-run.mp4" type="video/mp4">
+            <source src="assets/monster-run.webm" type="video/webm">
         </video>
+    </div>
 
-        <div id="blood-plate" class="hidden">
-            <div class="blood-overlay"></div>
-            <div class="blood-content">
-                <h2><span class="blood-letter">В</span>ВЕДИ СВОЁ <span class="blood-letter">И</span>МЯ</h2>
-                <input type="text" id="name-input" maxlength="20" placeholder="здесь...">
-                <button id="submit-name">ВОЙТИ</button>
+    <!-- Экран кровавой таблички -->
+    <div id="screen-blood" class="screen">
+        <div class="blood-drip" id="drip1"></div>
+        <div class="blood-drip" id="drip2"></div>
+        <div class="blood-drip" id="drip3"></div>
+        
+        <div class="blood-plate">
+            <div class="blood-stain"></div>
+            <div class="plate-content">
+                <h1 class="blood-title">ВВЕДИ СВОЁ ИМЯ</h1>
+                <div class="input-container">
+                    <input type="text" id="name-input" placeholder="ТВОЁ ИМЯ ЗДЕСЬ..." maxlength="20">
+                    <button id="submit-btn">✓</button>
+                </div>
+                <div class="blood-warning">ОН ЖДЁТ...</div>
             </div>
-            <div class="blood-drip" id="drip1"></div>
-            <div class="blood-drip" id="drip2"></div>
-            <div class="blood-drip" id="drip3"></div>
         </div>
     </div>
 
-    <!-- Фаза 3: История -->
-    <div id="phase-story" class="phase">
-        <video id="monster2-video" class="monster-media" loop muted playsinline>
-            <source src="assets/videos/monster2.mp4" type="video/mp4">
-            <source src="assets/videos/monster2.webm" type="video/webm">
+    <!-- Экран приветствия -->
+    <div id="screen-welcome" class="screen">
+        <div class="welcome-container">
+            <h2 id="welcome-text"></h2>
+        </div>
+    </div>
+
+    <!-- Экран истории -->
+    <div id="screen-story" class="screen">
+        <div class="story-container">
+            <div id="story-text" class="story-text"></div>
+            <div id="choices" class="choices hidden"></div>
+            <button id="continue-btn" class="continue-btn hidden">▶ ПРОДОЛЖИТЬ</button>
+        </div>
+        
+        <!-- Добрый монстр -->
+        <video id="friendly-monster" class="monster-video friendly" muted playsinline>
+            <!-- Замените на ваше видео доброго монстра -->
+            <source src="assets/friendly-monster.mp4" type="video/mp4">
+            <source src="assets/friendly-monster.webm" type="video/webm">
         </video>
+    </div>
 
-        <div id="story-container" class="hidden">
-            <div id="story-text"></div>
-            
-            <div id="choices-container" class="hidden">
-                <button class="choice-btn" data-choice="1">ПРИНЯТЬ ПРЕДЛОЖЕНИЕ</button>
-                <button class="choice-btn" data-choice="2">ОТКАЗАТЬСЯ</button>
-                <button class="choice-btn" data-choice="3">СПРОСИТЬ ПОДРОБНОСТИ</button>
-            </div>
-
-            <div id="story-continue" class="hidden">
-                <button id="continue-btn">ПРОДОЛЖИТЬ ➜</button>
-            </div>
-        </div>
-
-        <div id="endings-container" class="hidden">
-            <div id="ending-content"></div>
-            <button id="restart-btn">НАЧАТЬ СНАЧАЛА</button>
+    <!-- Экран концовки -->
+    <div id="screen-ending" class="screen">
+        <div class="ending-container">
+            <div id="ending-text" class="ending-text"></div>
+            <button id="restart-btn" class="restart-btn">НАЧАТЬ СНАЧАЛА</button>
         </div>
     </div>
 
-    <!-- Аудио -->
-    <audio id="drip-sound" src="assets/sounds/drip.mp3" preload="auto"></audio>
-    <audio id="monster-sound" src="assets/sounds/monster-growl.mp3" preload="auto"></audio>
-    <audio id="magic-sound" src="assets/sounds/magic.mp3" preload="auto"></audio>
-    <audio id="click-sound" src="assets/sounds/click.mp3" preload="auto"></audio>
+    <!-- Аудио элементы -->
+    <audio id="sound-drip" preload="auto">
+        <source src="assets/sounds/drip.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sound-scary" preload="auto">
+        <source src="assets/sounds/scary.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sound-magic" preload="auto">
+        <source src="assets/sounds/magic.mp3" type="audio/mpeg">
+    </audio>
 
     <script src="script.js"></script>
 </body>
