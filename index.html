@@ -3,93 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Монстр-404</title>
+    <title>Марш Смерти: Параллельный Мир</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Orbitron:wght@400;700;900&family=Special+Elite&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yomogi&family=DotGothic16&family=M+PLUS+Rounded+1c:wght@400;700&family=New+Tegomin&display=swap">
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 </head>
 <body>
-    <!-- Начальный экран: Ошибка 404 -->
+    <!-- Экран 1: Ошибка 404 -->
     <div id="screen-404" class="screen active">
-        <div class="error-container">
-            <div class="error-number">
-                <span class="digit">4</span>
-                <span class="digit">0</span>
-                <span class="digit">4</span>
+        <div class="glitch-container">
+            <div class="glitch-text" data-text="システムエラー">システムエラー</div>
+            <div class="error-code">
+                <span class="glitching">4</span>
+                <span class="glitching">0</span>
+                <span class="glitching">4</span>
             </div>
-            <div class="error-text">МОНСТР НЕ НАЙДЕН</div>
-            <div class="error-subtext">но он найдет тебя...</div>
+            <div class="error-message">
+                <span class="jp-text">平行世界への接続が切断されました</span>
+                <br>
+                <span class="ru-text">Соединение с параллельным миром разорвано</span>
+            </div>
+            <div class="scan-line"></div>
         </div>
     </div>
 
-    <!-- Экран монстра -->
+    <!-- Экран 2: Вторжение монстра -->
     <div id="screen-monster" class="screen">
-        <video id="monster-video" class="monster-video" muted playsinline>
-            <!-- Замените на ваше видео монстра -->
-            <source src="assets/monster-run.mp4" type="video/mp4">
-            <source src="assets/monster-run.webm" type="video/webm">
+        <div class="distortion-overlay"></div>
+        <video id="void-monster" class="monster-video" muted playsinline loop>
+            <source src="assets/void-creature.mp4" type="video/mp4">
+            <source src="assets/void-creature.webm" type="video/webm">
         </video>
+        <div class="static-overlay"></div>
     </div>
 
-    <!-- Экран кровавой таблички -->
-    <div id="screen-blood" class="screen">
-        <div class="blood-drip" id="drip1"></div>
-        <div class="blood-drip" id="drip2"></div>
-        <div class="blood-drip" id="drip3"></div>
-        
-        <div class="blood-plate">
-            <div class="blood-stain"></div>
-            <div class="plate-content">
-                <h1 class="blood-title">ВВЕДИ СВОЁ ИМЯ</h1>
-                <div class="input-container">
-                    <input type="text" id="name-input" placeholder="ТВОЁ ИМЯ ЗДЕСЬ..." maxlength="20">
-                    <button id="submit-btn">✓</button>
+    <!-- Экран 3: Кровавый интерфейс -->
+    <div id="screen-interface" class="screen">
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-buttons">
+                    <span class="terminal-btn close"></span>
+                    <span class="terminal-btn minimize"></span>
+                    <span class="terminal-btn maximize"></span>
                 </div>
-                <div class="blood-warning">ОН ЖДЁТ...</div>
+                <div class="terminal-title">SYSTEM_INTRUSION.EXE</div>
+            </div>
+            <div class="terminal-body">
+                <div class="terminal-text">
+                    <span class="prompt">root@parallel-world:~$ </span>
+                    <span class="command">scan_intruder.exe</span>
+                    <br>
+                    <span class="output">＞＞ ОБНАРУЖЕНА УГРОЗА: [СУЩНОСТЬ-404]</span>
+                    <br>
+                    <span class="output">＞＞ МЕСТОПОЛОЖЕНИЕ: ПАРАЛЛЕЛЬНЫЙ СЕКТОР [死亡行進]</span>
+                    <br>
+                    <span class="output">＞＞ ТРЕБУЕТСЯ ИДЕНТИФИКАЦИЯ...</span>
+                </div>
+                
+                <div class="input-section">
+                    <div class="blood-input">
+                        <span class="input-label">ВВЕДИТЕ КОД ДОСТУПА (ВАШЕ ИМЯ):</span>
+                        <div class="input-wrapper">
+                            <input type="text" id="access-code" placeholder="■■■■■■■■■■" maxlength="20">
+                            <div class="blood-trail"></div>
+                        </div>
+                        <button id="verify-btn" class="hack-button">
+                            <span class="btn-text">ПОДТВЕРДИТЬ</span>
+                            <span class="btn-glitch">侵入する</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="blood-drops">
+                    <div class="drop" style="left: 10%"></div>
+                    <div class="drop" style="left: 30%"></div>
+                    <div class="drop" style="left: 50%"></div>
+                    <div class="drop" style="left: 70%"></div>
+                    <div class="drop" style="left: 90%"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Экран приветствия -->
+    <!-- Экран 4: Приветствие -->
     <div id="screen-welcome" class="screen">
-        <div class="welcome-container">
-            <h2 id="welcome-text"></h2>
+        <div class="welcome-glitch">
+            <div class="welcome-message">
+                <h1 id="player-name-display"></h1>
+                <div class="welcome-subtitle">
+                    <span class="jp">ようこそ、異世界の旅人</span>
+                    <br>
+                    <span class="ru">Добро пожаловать, путешественник иных миров</span>
+                </div>
+            </div>
+            <div class="data-stream">
+                <div class="stream-line"></div>
+                <div class="stream-line"></div>
+                <div class="stream-line"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Экран истории -->
+    <!-- Экран 5: История -->
     <div id="screen-story" class="screen">
-        <div class="story-container">
-            <div id="story-text" class="story-text"></div>
-            <div id="choices" class="choices hidden"></div>
-            <button id="continue-btn" class="continue-btn hidden">▶ ПРОДОЛЖИТЬ</button>
+        <div class="story-background">
+            <div class="floating-islands"></div>
+            <div class="celestial-bodies">
+                <div class="moon"></div>
+                <div class="sun"></div>
+            </div>
         </div>
         
-        <!-- Добрый монстр -->
-        <video id="friendly-monster" class="monster-video friendly" muted playsinline>
-            <!-- Замените на ваше видео доброго монстра -->
-            <source src="assets/friendly-monster.mp4" type="video/mp4">
-            <source src="assets/friendly-monster.webm" type="video/webm">
-        </video>
-    </div>
-
-    <!-- Экран концовки -->
-    <div id="screen-ending" class="screen">
-        <div class="ending-container">
-            <div id="ending-text" class="ending-text"></div>
-            <button id="restart-btn" class="restart-btn">НАЧАТЬ СНАЧАЛА</button>
+        <div class="visual-novel">
+            <div class="vn-character">
+                <div class="character-sprite" id="sprite-ainz"></div>
+                <div class="character-name">● АИНЗ ООАЛ ГОУН</div>
+            </div>
+            
+            <div class="vn-textbox">
+                <div class="text-container">
+                    <div id="story-text" class="story-text"></div>
+                </div>
+                
+                <div class="vn-choices" id="choices-container"></div>
+                
+                <div class="vn-controls">
+                    <button id="auto-btn" class="control-btn">AUTO</button>
+                    <button id="skip-btn" class="control-btn">SKIP</button>
+                    <button id="next-btn" class="control-btn next-btn">▶</button>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="battle-ui hidden">
+            <div class="hp-bars">
+                <div class="hp-bar player">
+                    <div class="hp-label">ВАШ HP</div>
+                    <div class="hp-fill" style="width: 100%"></div>
+                    <div class="hp-value">100/100</div>
+                </div>
+                <div class="hp-bar enemy">
+                    <div class="hp-label">СУЩНОСТЬ-404</div>
+                    <div class="hp-fill" style="width: 100%"></div>
+                    <div class="hp-value">???/???</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Аудио элементы -->
-    <audio id="sound-drip" preload="auto">
-        <source src="assets/sounds/drip.mp3" type="audio/mpeg">
+    <!-- Экран 6: Концовка -->
+    <div id="screen-ending" class="screen">
+        <div class="ending-scene">
+            <div class="episode-title">
+                <div class="ep-num">EPISODE 13</div>
+                <div class="ep-name">DEATH MARCH TO THE PARALLEL WORLD</div>
+            </div>
+            
+            <div class="ending-content">
+                <div id="ending-text"></div>
+                <div class="ending-stats">
+                    <div class="stat">
+                        <span class="stat-label">МИРОВ ПРОЙДЕНО:</span>
+                        <span class="stat-value">7</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">СОЮЗНИКОВ:</span>
+                        <span class="stat-value" id="ally-count">3</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">КОНЕЧНЫЙ РАНГ:</span>
+                        <span class="stat-value" id="player-rank">S</span>
+                    </div>
+                </div>
+                
+                <div class="ending-credits">
+                    <div class="credit-title">СОЗДАТЕЛИ:</div>
+                    <div class="credit-names">
+                        ● Сценарий: [МОНСТР-404]<br>
+                        ● Режиссёр: [ПАРАЛЛЕЛЬНАЯ РЕАЛЬНОСТЬ]<br>
+                        ● Главный герой: <span id="credit-name"></span><br>
+                        ● Спецэффекты: [ИСКАЖЕНИЕ ПРОСТРАНСТВА]
+                    </div>
+                </div>
+            </div>
+            
+            <button id="new-game-btn" class="ng-button">
+                <span>NEW GAME+</span>
+                <div class="ng-sub">別の世界線へ</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Аудио -->
+    <audio id="bgm-main" loop>
+        <source src="assets/bgm-main.mp3" type="audio/mpeg">
     </audio>
-    <audio id="sound-scary" preload="auto">
-        <source src="assets/sounds/scary.mp3" type="audio/mpeg">
+    <audio id="sfx-glitch">
+        <source src="assets/glitch.mp3" type="audio/mpeg">
     </audio>
-    <audio id="sound-magic" preload="auto">
-        <source src="assets/sounds/magic.mp3" type="audio/mpeg">
+    <audio id="sfx-type">
+        <source src="assets/typewriter.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-battle">
+        <source src="assets/battle.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-victory">
+        <source src="assets/victory.mp3" type="audio/mpeg">
     </audio>
 
     <script src="script.js"></script>
