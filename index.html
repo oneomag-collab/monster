@@ -3,91 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Параллельный мир | Марш смерти</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Скоро открытие! | tyt.monster</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=MedievalSharp&family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+        .logo span { color: #3498db; }
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+        .tagline {
+            font-size: 1.4rem;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .timer {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #e74c3c;
+            margin: 50px 0;
+            font-family: monospace;
+        }
+        .timer-label {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 15px;
+            font-size: 1rem;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .contact {
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 1px solid #eee;
+        }
+        .contact p {
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 1.1rem;
+        }
+        .email-link {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 15px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        .email-link:hover {
+            background: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+        .note {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #bdc3c7;
+            font-style: italic;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 30px 25px; }
+            .logo { font-size: 2.8rem; }
+            h1 { font-size: 2.2rem; }
+            .tagline { font-size: 1.2rem; }
+            .timer { font-size: 2.2rem; }
+            .timer-label { gap: 20px; font-size: 0.9rem; }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 25px 20px; }
+            .logo { font-size: 2.3rem; }
+            h1 { font-size: 1.8rem; }
+            .timer { font-size: 1.8rem; }
+            .timer-label { flex-direction: column; gap: 5px; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Экран ошибки 404 -->
-    <div id="error-screen" class="screen">
-        <div class="error-container">
-            <div class="error-number">4<span class="blood">0</span>4</div>
-            <div class="error-text">Страница не найдена</div>
-            <div class="error-subtext">Соединение с параллельным миром потеряно...</div>
+    <div class="container">
+        <div class="logo">tyt.<span>monster</span></div>
+        <h1>Идёт работа над чем-то большим</h1>
+        <p class="tagline">Мы создаём новый цифровой опыт, который вас удивит. Следите за обновлениями — запуск уже совсем скоро!</p>
+
+        <!-- Таймер обратного отсчёта (опционально) -->
+        <div id="countdown-timer" class="timer">00:00:00:00</div>
+        <div class="timer-label">
+            <span>Дни</span>
+            <span>Часы</span>
+            <span>Минуты</span>
+            <span>Секунды</span>
         </div>
+
+        <div class="contact">
+            <p>Есть вопросы или хотите связаться с нами до запуска?</p>
+            <a href="mailto:hello@tyt.monster" class="email-link">Написать на hello@tyt.monster</a>
+        </div>
+
+        <p class="note">© 2025 tyt.monster. Все права защищены.</p>
     </div>
 
-    <!-- Экран потери соединения -->
-    <div id="connection-screen" class="screen hidden">
-        <div class="connection-container">
-            <div class="connection-icon">
-                <i class="fas fa-unlink"></i>
-            </div>
-            <div class="connection-text">Потеряно соединение с сервером</div>
-            <div class="connection-subtext">Попытка восстановления подключения к параллельному миру...</div>
-        </div>
-    </div>
+    <!-- Скрипт для таймера обратного отсчёта -->
+    <script>
+        function updateCountdown() {
+            const launchDate = new Date('2026-02-01T00:00:00').getTime(); // Установите вашу дату запуска
+            const now = new Date().getTime();
+            const timeLeft = launchDate - now;
 
-    <!-- Экран ввода имени -->
-    <div id="name-screen" class="screen hidden">
-        <div class="blood-window">
-            <div class="blood-drips">
-                <div class="drip drip-1"></div>
-                <div class="drip drip-2"></div>
-                <div class="drip drip-3"></div>
-                <div class="drip drip-4"></div>
-                <div class="drip drip-5"></div>
-            </div>
-            <div class="window-title">
-                <i class="fas fa-skull-crossbones"></i> Вход в параллельный мир
-            </div>
-            <div class="window-content">
-                <p>Чтобы восстановить соединение, представьтесь:</p>
-                <div class="input-container">
-                    <input type="text" id="username-input" placeholder="Ваше имя..." maxlength="20">
-                    <div class="input-border"></div>
-                </div>
-                <p class="warning"><i class="fas fa-exclamation-triangle"></i> Предупреждение: введённые данные могут быть использованы против вас</p>
-                <button id="name-submit" class="blood-button">Подключиться <i class="fas fa-plug"></i></button>
-            </div>
-        </div>
-    </div>
+            if (timeLeft < 0) {
+                document.getElementById('countdown-timer').textContent = "Мы открылись!";
+                return;
+            }
 
-    <!-- Основной экран с историей -->
-    <div id="story-screen" class="screen hidden">
-        <div class="story-container">
-            <header class="story-header">
-                <h1><i class="fas fa-ribbon"></i> Марш смерти под рапсодию параллельного мира</h1>
-                <div class="user-info">Игрок: <span id="user-display">Гость</span></div>
-            </header>
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-            <main class="story-content">
-                <!-- Текст будет добавляться динамически -->
-                <div id="story-text-container"></div>
-            </main>
-
-            <footer class="story-footer">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
-                </div>
-                <div class="navigation">
-                    <button id="prev-btn" class="nav-button" disabled>
-                        <i class="fas fa-arrow-left"></i> Назад
-                    </button>
-                    <div class="page-counter">
-                        Страница: <span id="current-page">1</span> из <span id="total-pages">6</span>
-                    </div>
-                    <button id="next-btn" class="nav-button">
-                        Далее <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-            </footer>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+            document.getElementById('countdown-timer').textContent =
+                `${days.toString().padStart(2, '0')}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Первый вызов
+    </script>
 </body>
 </html>
